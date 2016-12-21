@@ -1,13 +1,14 @@
 package file
 
 import (
+	"io"
 	"os"
 
 	"github.com/philchia/gol/adapter"
 )
 
 type fileAdapter struct {
-	file *os.File
+	writer io.Writer
 }
 
 func NewFileAdapter(pathToFile string) adapter.Adapter {
@@ -17,19 +18,19 @@ func NewFileAdapter(pathToFile string) adapter.Adapter {
 	}
 
 	adapter := &fileAdapter{
-		file: file,
+		writer: file,
 	}
 	return adapter
 }
 
 func NewConsoleAdapter() adapter.Adapter {
 	adapter := &fileAdapter{
-		file: os.Stderr,
+		writer: os.Stderr,
 	}
 	return adapter
 }
 
 func (a *fileAdapter) Write(b []byte) error {
-	_, err := a.file.Write(b)
+	_, err := a.writer.Write(b)
 	return err
 }
