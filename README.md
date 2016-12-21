@@ -6,3 +6,66 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/philchia/gol)](https://goreportcard.com/report/github.com/philchia/gol)
 [![GoDoc](https://godoc.org/github.com/philchia/gol?status.svg)](https://godoc.org/github.com/philchia/gol)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+
+## Usage
+
+### Log to console
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+gol.Debug("Hello, gol!!!")
+gol.Criticalf("Hello from %s", runtime.GOOS)
+
+```
+
+### Set level
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+gol.SetLevel(gol.ERROR)
+gol.Debug("Hello, gol!!!") // this will not print
+gol.Criticalf("Hello from %s", runtime.GOOS)
+
+```
+
+### Set options
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
+gol.Debug("Hello, gol!!!")
+gol.Criticalf("Hello from %s", runtime.GOOS)
+
+```
+
+### Add adapters
+
+You can implement you custom adapters which implement the Adapter interface.
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
+gol.AddLogAdapter(a)
+gol.Debug("Hello, gol!!!")
+gol.Criticalf("Hello from %s", runtime.GOOS)
+```
+
+## License
+
+gol code is published under MIT license
