@@ -24,7 +24,7 @@ func (l *gollog) msgPump() {
 		select {
 		case msg := <-l.logChan:
 			for _, adap := range l.adapters {
-				adap.Write([]byte(msg))
+				adap.Write(stringUtil.Str2bytes(msg))
 			}
 		}
 	}
@@ -84,15 +84,15 @@ func (l *gollog) generatePrefix(callDepth int) string {
 		}
 	}
 
-	var file string
-	var line int
-	var ok bool
-	_, file, line, ok = runtime.Caller(callDepth)
-	if !ok {
-		file = "???"
-		line = 0
-	}
 	if l.option&(Lshortfile|Llongfile) != 0 {
+		var file string
+		var line int
+		var ok bool
+		_, file, line, ok = runtime.Caller(callDepth)
+		if !ok {
+			file = "???"
+			line = 0
+		}
 		if l.option&Lshortfile != 0 {
 			short := file
 			for i := len(file) - 1; i > 0; i-- {
