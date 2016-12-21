@@ -1,6 +1,13 @@
 package gol
 
+import "github.com/philchia/gol/adapter/file"
+
 var logger Logger
+
+func init() {
+	logger = NewLogger(ALL)
+	logger.AddLogAdapter(file.NewConsoleAdapter())
+}
 
 func Debug(i ...interface{}) {
 	logger.Debug(i...)
@@ -40,4 +47,8 @@ func Critical(i ...interface{}) {
 
 func Criticalf(format string, i ...interface{}) {
 	logger.Criticalf(format, i...)
+}
+
+func SetLevel(level LogLevel) {
+	logger.SetLevel(level)
 }
