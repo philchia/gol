@@ -1,6 +1,9 @@
 package gol
 
-import "github.com/philchia/gol/adapter/file"
+import (
+	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/adapter/file"
+)
 
 var logger Logger
 
@@ -51,4 +54,12 @@ func Criticalf(format string, i ...interface{}) {
 
 func SetLevel(level LogLevel) {
 	logger.SetLevel(level)
+}
+
+func SetOption(option LogOption) {
+	logger.SetOption(option)
+}
+
+func AddLogAdapter(a adapter.Adapter) {
+	logger.AddLogAdapter(a)
 }
