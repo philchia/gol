@@ -74,7 +74,7 @@ import (
     "runtime"
 )
 
-gol.AddLogAdapter(file.NewFileAdapter("/var/log/tmp.log"))
+gol.AddLogAdapter(file.NewAdapter("/var/log/tmp.log"))
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 
