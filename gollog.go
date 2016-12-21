@@ -19,7 +19,7 @@ func (l *gollog) msgPump() {
 		select {
 		case msg := <-l.logChan:
 			for _, adap := range l.adapters {
-				adap.Write([]byte(msg))
+				go adap.Write([]byte(msg))
 			}
 		}
 	}
