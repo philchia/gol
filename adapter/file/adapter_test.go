@@ -2,7 +2,6 @@ package file
 
 import (
 	"io"
-	"os"
 	"reflect"
 	"testing"
 
@@ -35,29 +34,8 @@ func TestNewFileAdapter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewFileAdapter(tt.args.pathToFile); !reflect.DeepEqual(got, tt.want) {
+			if got := NewAdapter(tt.args.pathToFile); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewFileAdapter() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewConsoleAdapter(t *testing.T) {
-	tests := []struct {
-		name string
-		want adapter.Adapter
-	}{
-		{
-			"case1",
-			&fileAdapter{
-				writer: os.Stderr,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewConsoleAdapter(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewConsoleAdapter() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -102,9 +80,9 @@ func Test_fileAdapter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &fileAdapter{
-				writer: tt.fields.writer,
+				file: tt.fields.writer,
 			}
-			if err := a.Write(tt.args.b); (err != nil) != tt.wantErr {
+			if _, err := a.Write(tt.args.b); (err != nil) != tt.wantErr {
 				t.Errorf("fileAdapter.Write() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

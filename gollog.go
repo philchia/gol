@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/philchia/gol/adapter"
-	"github.com/philchia/gol/internal/stringUtil"
+	"github.com/philchia/gol/internal"
 )
 
 type gollog struct {
@@ -24,7 +24,7 @@ func (l *gollog) msgPump() {
 		select {
 		case msg := <-l.logChan:
 			for _, adap := range l.adapters {
-				adap.Write(stringUtil.Str2bytes(msg))
+				adap.Write(internal.Str2bytes(msg))
 			}
 		}
 	}
@@ -113,7 +113,7 @@ func (l *gollog) generatePrefix(callDepth int) string {
 
 func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) string {
 	prefix := l.generatePrefix(callDepth)
-	return stringUtil.JoinStrings(prefix, "[", level.String(), "] ", msg, "\n")
+	return internal.JoinStrings(prefix, "[", level.String(), "] ", msg, "\n")
 }
 
 func (l *gollog) Debug(i ...interface{}) {

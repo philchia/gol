@@ -1,4 +1,4 @@
-package stringUtil
+package internal
 
 import (
 	"reflect"

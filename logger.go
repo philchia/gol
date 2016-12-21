@@ -2,7 +2,7 @@ package gol
 
 import (
 	"github.com/philchia/gol/adapter"
-	"github.com/philchia/gol/adapter/file"
+	"github.com/philchia/gol/adapter/console"
 )
 
 // Logger ...
@@ -34,7 +34,7 @@ func NewLogger(level LogLevel) Logger {
 		option:  LstdFlags,
 		logChan: make(chan string, 1024),
 	}
-	logger.AddLogAdapter(file.NewConsoleAdapter())
+	logger.AddLogAdapter(console.NewAdapter())
 
 	go logger.msgPump()
 	return logger
