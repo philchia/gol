@@ -54,7 +54,6 @@ func itoa(buf *bytes.Buffer, i int, wid int) {
 func (l *gollog) generatePrefix(callDepth int) string {
 	var buf bytes.Buffer
 
-	///////////////////////////
 	var t = time.Now()
 	if l.option&LUTC != 0 {
 		t = t.UTC()
@@ -108,8 +107,6 @@ func (l *gollog) generatePrefix(callDepth int) string {
 		itoa(&buf, line, -1)
 		buf.WriteString(": ")
 	}
-
-	///////////////////////////
 
 	return buf.String()
 }
