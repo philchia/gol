@@ -6,8 +6,21 @@ import (
 	"reflect"
 	"testing"
 
+	"errors"
+
 	"github.com/philchia/gol/adapter"
 )
+
+type fakeWriter struct {
+	withErr error
+}
+
+func (w *fakeWriter) Write(b []byte) (int, error) {
+	if w.withErr != nil {
+		return 0, w.withErr
+	}
+	return 1, nil
+}
 
 func TestNewFileAdapter(t *testing.T) {
 	type args struct {
@@ -63,7 +76,28 @@ func Test_fileAdapter_Write(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-	// TODO: Add test cases.
+		{
+			"case1",
+			fields{
+				new(fakeWriter),
+			},
+			args{
+				[]byte("hi"),
+			},
+			false,
+		},
+		{
+			"case2",
+			fields{
+				&fakeWriter{
+					withErr: errors.New("test"),
+				},
+			},
+			args{
+				[]byte("hi"),
+			},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
