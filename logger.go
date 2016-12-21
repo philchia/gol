@@ -1,7 +1,7 @@
 package gol
 
 import (
-	"io"
+	"github.com/philchia/gol/adapter"
 )
 
 // Logger ...
@@ -20,12 +20,19 @@ type Logger interface {
 
 	Critical(i ...interface{})
 	Criticalf(format string, i ...interface{})
+
+	SetLevel(LogLevel)
+	SetOption(LogOption)
+	AddLogAdapter(adapter.Adapter)
 }
 
-type gollog struct {
-	golWriter io.Writer
-}
-
-func NewLogger() Logger {
-
+// NewLogger create a Logger
+func NewLogger(level LogLevel) Logger {
+	logger := &gollog{
+		level:   level,
+		option:  LstdFlags,
+		logChan: make(chan string, 1024),
+	}
+	go logger.msgPump()
+	return logger
 }
