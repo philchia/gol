@@ -1,15 +1,11 @@
 package gol
 
-import (
-	"github.com/philchia/gol/adapter"
-	"github.com/philchia/gol/adapter/file"
-)
+import "github.com/philchia/gol/adapter"
 
 var logger Logger
 
 func init() {
 	logger = NewLogger(ALL)
-	logger.AddLogAdapter(file.NewConsoleAdapter())
 }
 
 func Debug(i ...interface{}) {
