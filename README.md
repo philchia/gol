@@ -139,7 +139,8 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 ## Todo
 
 - [ ] Implement logrotate
-- [ ] Add test cases
+- [ ] Increment test coverage
+- [ ] Test async log
 
 ## License
 
