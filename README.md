@@ -136,6 +136,11 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 
     $ godoc github.com/philchia/gol
 
+## Todo
+
+- [] Implement logrotate
+- [] Add test cases
+
 ## License
 
 gol code is published under MIT license
