@@ -124,6 +124,18 @@ gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 ```
 
+## Installation
+
+    $ go get github.com/philchia/gol
+
+or you can use `go get -u` to update the package
+
+## Documentation
+
+For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc")  or run:
+
+    $ godoc github.com/philchia/gol
+
 ## License
 
 gol code is published under MIT license
