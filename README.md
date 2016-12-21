@@ -22,6 +22,20 @@ gol.Criticalf("Hello from %s", runtime.GOOS)
 
 ```
 
+### Log to file
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+gol.AddLogAdapter(file.NewFileAdapter("/var/log/tmp.log"))
+gol.Debug("Hello, gol!!!")
+gol.Criticalf("Hello from %s", runtime.GOOS)
+
+```
+
 ### Set level
 
 ```go
@@ -52,7 +66,7 @@ gol.Criticalf("Hello from %s", runtime.GOOS)
 
 ### Add adapters
 
-You can implement you custom adapters which implement the Adapter interface.
+You can implement you own custom adapters which implement the Adapter interface.
 
 ```go
 import (
