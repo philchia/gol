@@ -7,6 +7,50 @@
 [![GoDoc](https://godoc.org/github.com/philchia/gol?status.svg)](https://godoc.org/github.com/philchia/gol)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
+## Introduce
+
+### Async
+
+gol is a high performance async log kit for golang, as of async, gol has a high speed.
+
+### Level
+
+gol support log level
+
+```go
+const (
+    ALL LogLevel = iota
+    DEBUG
+    INFO
+    WARN
+    ERROR
+    CRITICAL
+)
+```
+
+### Log rotate
+
+gol has a built in file adapter which support automatically rotate within log files, also customizable rotate count and file size limits
+
+### Customize backend output
+
+You can create any backend adapter which implement the Adapter interface.
+
+Actually Adapter is a alias of io.Writer
+
+```go
+type Adapter interface {
+    io.Writer
+}
+```
+
+### Color
+
+gol also include a colorful output.
+
+![Colorful output](./assets/screen.png)
+
+
 ## Usage
 
 ### Log to console
