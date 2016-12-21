@@ -138,8 +138,8 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 
 ## Todo
 
-- [] Implement logrotate
-- [] Add test cases
+- [ ] Implement logrotate
+- [ ] Add test cases
 
 ## License
 
