@@ -116,7 +116,7 @@ func (l *gollog) generatePrefix(callDepth int) string {
 
 func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) string {
 	prefix := l.generatePrefix(callDepth)
-	return stringUtil.JoinStrings(prefix, " [", level.String(), "] ", msg, "\n")
+	return stringUtil.JoinStrings(prefix, "[", level.String(), "] ", msg, "\n")
 }
 
 func (l *gollog) Debug(i ...interface{}) {
