@@ -21,6 +21,10 @@ func (w *fakeWriter) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
+func (w *fakeWriter) Close() error {
+	return nil
+}
+
 func TestNewFileAdapter(t *testing.T) {
 	type args struct {
 		pathToFile string
@@ -43,7 +47,7 @@ func TestNewFileAdapter(t *testing.T) {
 
 func Test_fileAdapter_Write(t *testing.T) {
 	type fields struct {
-		writer io.Writer
+		writer io.WriteCloser
 	}
 	type args struct {
 		b []byte
@@ -80,7 +84,7 @@ func Test_fileAdapter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &fileAdapter{
-				file: tt.fields.writer,
+				tt.fields.writer,
 			}
 			if _, err := a.Write(tt.args.b); (err != nil) != tt.wantErr {
 				t.Errorf("fileAdapter.Write() error = %v, wantErr %v", err, tt.wantErr)

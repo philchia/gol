@@ -9,15 +9,11 @@ import (
 )
 
 type consoleAdapter struct {
-	writer io.Writer
+	io.WriteCloser
 }
 
 func NewAdapter() adapter.Adapter {
 	return &consoleAdapter{
-		writer: os.Stderr,
+		os.Stderr,
 	}
-}
-
-func (c *consoleAdapter) Write(b []byte) (int, error) {
-	return c.writer.Write(b)
 }

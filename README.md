@@ -40,7 +40,7 @@ Actually Adapter is a alias of io.Writer
 
 ```go
 type Adapter interface {
-    io.Writer
+    io.WriteCloser
 }
 ```
 

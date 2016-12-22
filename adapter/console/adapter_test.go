@@ -23,6 +23,10 @@ func (w *fakeWriter) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
+func (w *fakeWriter) Close() error {
+	return nil
+}
+
 func TestNewAdapter(t *testing.T) {
 	tests := []struct {
 		name string
@@ -31,7 +35,7 @@ func TestNewAdapter(t *testing.T) {
 		{
 			"case1",
 			&consoleAdapter{
-				writer: os.Stderr,
+				os.Stderr,
 			},
 		},
 	}
@@ -46,7 +50,7 @@ func TestNewAdapter(t *testing.T) {
 
 func Test_consoleAdapter_Write(t *testing.T) {
 	type fields struct {
-		writer io.Writer
+		writer io.WriteCloser
 	}
 	type args struct {
 		b []byte
@@ -61,7 +65,7 @@ func Test_consoleAdapter_Write(t *testing.T) {
 		{
 			"case1",
 			fields{
-				writer: new(fakeWriter),
+				new(fakeWriter),
 			},
 			args{
 				[]byte("Hello"),
@@ -86,7 +90,7 @@ func Test_consoleAdapter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &consoleAdapter{
-				writer: tt.fields.writer,
+				tt.fields.writer,
 			}
 			got, err := c.Write(tt.args.b)
 			if (err != nil) != tt.wantErr {

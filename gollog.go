@@ -233,4 +233,7 @@ func (l *gollog) Flush() {
 	l.setExiting(true)
 	close(l.logChan)
 	<-l.doneChan
+	for _, c := range l.adapters {
+		c.Close()
+	}
 }
