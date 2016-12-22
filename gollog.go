@@ -9,17 +9,32 @@ import (
 
 	"time"
 
+	"sync/atomic"
+
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/internal"
 )
 
 type gollog struct {
-	level      LogLevel
-	option     LogOption
-	adapters   []adapter.Adapter
-	logChan    chan string
-	doneChan   chan struct{}
-	signalChan chan os.Signal
+	level       LogLevel
+	option      LogOption
+	adapters    []adapter.Adapter
+	logChan     chan string
+	doneChan    chan struct{}
+	signalChan  chan os.Signal
+	exitingFlag uint64
+}
+
+func (l *gollog) exiting() bool {
+	return atomic.LoadUint64(&l.exitingFlag) == 1
+}
+
+func (l *gollog) setExiting(flag bool) {
+	if flag {
+		atomic.StoreUint64(&l.exitingFlag, 1)
+	} else {
+		atomic.StoreUint64(&l.exitingFlag, 0)
+	}
 }
 
 func (l *gollog) msgPump() {
@@ -34,6 +49,9 @@ func (l *gollog) msgPump() {
 }
 
 func (l *gollog) put(msg string) {
+	if l.exiting() {
+		return
+	}
 	l.logChan <- msg
 }
 
@@ -214,6 +232,7 @@ func (l *gollog) AddLogAdapter(a adapter.Adapter) {
 }
 
 func (l *gollog) flush() {
+	l.setExiting(true)
 	close(l.logChan)
 	<-l.doneChan
 }
