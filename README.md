@@ -76,7 +76,7 @@ import (
 )
 
 defer gol.Flush()
-gol.AddLogAdapter(file.NewAdapter("/var/log/tmp.log"))
+gol.AddLogAdapter("file", file.NewAdapter("/var/log/tmp.log"))
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 
@@ -124,7 +124,7 @@ import (
 
 defer gol.Flush()
 gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
-gol.AddLogAdapter(a)
+gol.AddLogAdapter("anonymous", a)
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 ```
