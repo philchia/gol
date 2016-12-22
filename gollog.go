@@ -2,6 +2,7 @@ package gol
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"bytes"
@@ -13,21 +14,27 @@ import (
 )
 
 type gollog struct {
-	level    LogLevel
-	option   LogOption
-	adapters []adapter.Adapter
-	logChan  chan string
+	level      LogLevel
+	option     LogOption
+	adapters   []adapter.Adapter
+	logChan    chan string
+	doneChan   chan struct{}
+	signalChan chan os.Signal
 }
 
 func (l *gollog) msgPump() {
 	for {
 		select {
-		case msg := <-l.logChan:
+		case msg, ok := <-l.logChan:
+			if !ok {
+				break
+			}
 			for _, adap := range l.adapters {
 				adap.Write(internal.Str2bytes(msg))
 			}
 		}
 	}
+	close(l.doneChan)
 }
 
 func (l *gollog) put(msg string) {
@@ -208,4 +215,9 @@ func (l *gollog) AddLogAdapter(a adapter.Adapter) {
 	if a != nil {
 		l.adapters = append(l.adapters, a)
 	}
+}
+
+func (l *gollog) flush() {
+	close(l.logChan)
+	<-l.doneChan
 }
