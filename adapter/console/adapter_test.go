@@ -1,9 +1,11 @@
-package file
+package console
 
 import (
 	"io"
 	"reflect"
 	"testing"
+
+	"os"
 
 	"errors"
 
@@ -21,27 +23,28 @@ func (w *fakeWriter) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-func TestNewFileAdapter(t *testing.T) {
-	type args struct {
-		pathToFile string
-	}
+func TestNewAdapter(t *testing.T) {
 	tests := []struct {
 		name string
-		args args
 		want adapter.Adapter
 	}{
-	// TODO: Add test cases.
+		{
+			"case1",
+			&consoleAdapter{
+				writer: os.Stderr,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewAdapter(tt.args.pathToFile); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewFileAdapter() = %v, want %v", got, tt.want)
+			if got := NewAdapter(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewAdapter() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_fileAdapter_Write(t *testing.T) {
+func Test_consoleAdapter_Write(t *testing.T) {
 	type fields struct {
 		writer io.Writer
 	}
@@ -52,38 +55,46 @@ func Test_fileAdapter_Write(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
+		want    int
 		wantErr bool
 	}{
 		{
 			"case1",
 			fields{
-				new(fakeWriter),
+				writer: new(fakeWriter),
 			},
 			args{
-				[]byte("hi"),
+				[]byte("Hello"),
 			},
+			5,
 			false,
 		},
 		{
 			"case2",
 			fields{
-				&fakeWriter{
-					withErr: errors.New("test"),
+				writer: &fakeWriter{
+					withErr: errors.New("failed to write"),
 				},
 			},
 			args{
-				[]byte("hi"),
+				[]byte("Hello"),
 			},
+			0,
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &fileAdapter{
-				file: tt.fields.writer,
+			c := &consoleAdapter{
+				writer: tt.fields.writer,
 			}
-			if _, err := a.Write(tt.args.b); (err != nil) != tt.wantErr {
-				t.Errorf("fileAdapter.Write() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := c.Write(tt.args.b)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("consoleAdapter.Write() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("consoleAdapter.Write() = %v, want %v", got, tt.want)
 			}
 		})
 	}
