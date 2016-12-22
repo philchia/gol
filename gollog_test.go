@@ -11,7 +11,7 @@ func Test_gollog_msgPump(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	tests := []struct {
@@ -37,7 +37,7 @@ func Test_gollog_put(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -86,7 +86,7 @@ func Test_gollog_generatePrefix(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -119,7 +119,7 @@ func Test_gollog_generateLog(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -154,7 +154,7 @@ func Test_gollog_Debug(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -184,7 +184,7 @@ func Test_gollog_Debugf(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -215,7 +215,7 @@ func Test_gollog_Info(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -245,7 +245,7 @@ func Test_gollog_Infof(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -276,7 +276,7 @@ func Test_gollog_Warn(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -306,7 +306,7 @@ func Test_gollog_Warnf(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -337,7 +337,7 @@ func Test_gollog_Error(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -367,7 +367,7 @@ func Test_gollog_Errorf(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -398,7 +398,7 @@ func Test_gollog_Critical(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -428,7 +428,7 @@ func Test_gollog_Criticalf(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -459,7 +459,7 @@ func Test_gollog_SetLevel(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -489,7 +489,7 @@ func Test_gollog_SetOption(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
@@ -519,11 +519,12 @@ func Test_gollog_AddLogAdapter(t *testing.T) {
 	type fields struct {
 		level    LogLevel
 		option   LogOption
-		adapters []adapter.Adapter
+		adapters map[string]adapter.Adapter
 		logChan  chan string
 	}
 	type args struct {
-		a adapter.Adapter
+		a    adapter.Adapter
+		name string
 	}
 	tests := []struct {
 		name   string
@@ -540,7 +541,7 @@ func Test_gollog_AddLogAdapter(t *testing.T) {
 				adapters: tt.fields.adapters,
 				logChan:  tt.fields.logChan,
 			}
-			l.AddLogAdapter(tt.args.a)
+			l.AddLogAdapter(tt.args.name, tt.args.a)
 		})
 	}
 }

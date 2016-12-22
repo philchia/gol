@@ -10,6 +10,8 @@ import (
 
 	"sync/atomic"
 
+	"errors"
+
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/internal"
 )
@@ -17,7 +19,7 @@ import (
 type gollog struct {
 	level       LogLevel
 	option      LogOption
-	adapters    []adapter.Adapter
+	adapters    map[string]adapter.Adapter
 	logChan     chan string
 	doneChan    chan struct{}
 	exitingFlag uint64
@@ -223,10 +225,20 @@ func (l *gollog) SetOption(option LogOption) {
 	l.option = option
 }
 
-func (l *gollog) AddLogAdapter(a adapter.Adapter) {
-	if a != nil {
-		l.adapters = append(l.adapters, a)
+func (l *gollog) AddLogAdapter(name string, adapter adapter.Adapter) error {
+	if _, ok := l.adapters[name]; ok {
+		return errors.New("Adapter already exists")
 	}
+	l.adapters[name] = adapter
+	return nil
+}
+
+func (l *gollog) RemoveAdapter(name string) error {
+	if _, ok := l.adapters[name]; !ok {
+		return errors.New("Adapter not exists")
+	}
+	delete(l.adapters, name)
+	return nil
 }
 
 func (l *gollog) Flush() {

@@ -56,8 +56,12 @@ func SetOption(option LogOption) {
 	logger.SetOption(option)
 }
 
-func AddLogAdapter(a adapter.Adapter) {
-	logger.AddLogAdapter(a)
+func AddLogAdapter(name string, adapter adapter.Adapter) error {
+	return logger.AddLogAdapter(name, adapter)
+}
+
+func RemoveAdapter(name string) error {
+	return logger.RemoveAdapter(name)
 }
 
 func Flush() {

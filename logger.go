@@ -24,10 +24,13 @@ type Logger interface {
 
 	SetLevel(LogLevel)
 	SetOption(LogOption)
-	AddLogAdapter(adapter.Adapter)
 
+	AddLogAdapter(name string, adapter adapter.Adapter) error
+	RemoveAdapter(name string) error
 	Flush()
 }
+
+const CONSOLELOGGER = "console"
 
 // NewLogger create a Logger
 func NewLogger(level LogLevel) Logger {
@@ -36,9 +39,10 @@ func NewLogger(level LogLevel) Logger {
 		option:   LstdFlags,
 		logChan:  make(chan string, 1024),
 		doneChan: make(chan struct{}),
+		adapters: make(map[string]adapter.Adapter, 1),
 	}
 
-	logger.AddLogAdapter(console.NewAdapter())
+	logger.AddLogAdapter(CONSOLELOGGER, console.NewAdapter())
 
 	go logger.msgPump()
 	return logger
