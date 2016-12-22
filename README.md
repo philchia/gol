@@ -136,11 +136,20 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 
     $ godoc github.com/philchia/gol
 
-## Todo
+## Features
 
-- [ ] Implement logrotate
-- [ ] Increment test coverage
-- [ ] Test async log
+- [X] Log level support
+- [X] Customizable log option support
+- [X] Async write
+- [X] Colorful output
+- [X] Flush buffered log on exit
+- [ ] Toggle console adapter
+- [ ] Level support for single adapter
+- [ ] Logrotate
+- [ ] Mail adapter
+- [ ] Slack adapter
+- [ ] Elastic Search adapter for ELK stack
+- [ ] 100% coverage [![Coverage Status](https://coveralls.io/repos/github/philchia/gol/badge.svg?branch=master)](https://coveralls.io/github/philchia/gol?branch=master)
 
 ## License
 
