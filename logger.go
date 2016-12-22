@@ -1,10 +1,6 @@
 package gol
 
 import (
-	"os"
-
-	"os/signal"
-
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/adapter/console"
 )
@@ -29,26 +25,20 @@ type Logger interface {
 	SetLevel(LogLevel)
 	SetOption(LogOption)
 	AddLogAdapter(adapter.Adapter)
+
+	Flush()
 }
 
 // NewLogger create a Logger
 func NewLogger(level LogLevel) Logger {
 	logger := &gollog{
-		level:      level,
-		option:     LstdFlags,
-		logChan:    make(chan string, 1024),
-		doneChan:   make(chan struct{}),
-		signalChan: make(chan os.Signal, 1),
+		level:    level,
+		option:   LstdFlags,
+		logChan:  make(chan string, 1024),
+		doneChan: make(chan struct{}),
 	}
 
-	signal.Notify(logger.signalChan, os.Interrupt, os.Kill)
 	logger.AddLogAdapter(console.NewAdapter())
-	go func() {
-		select {
-		case <-logger.signalChan:
-			logger.flush()
-		}
-	}()
 
 	go logger.msgPump()
 	return logger

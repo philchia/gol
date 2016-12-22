@@ -2,7 +2,6 @@ package gol
 
 import (
 	"fmt"
-	"os"
 	"runtime"
 
 	"bytes"
@@ -21,7 +20,6 @@ type gollog struct {
 	adapters    []adapter.Adapter
 	logChan     chan string
 	doneChan    chan struct{}
-	signalChan  chan os.Signal
 	exitingFlag uint64
 }
 
@@ -231,7 +229,7 @@ func (l *gollog) AddLogAdapter(a adapter.Adapter) {
 	}
 }
 
-func (l *gollog) flush() {
+func (l *gollog) Flush() {
 	l.setExiting(true)
 	close(l.logChan)
 	<-l.doneChan

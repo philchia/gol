@@ -59,3 +59,7 @@ func SetOption(option LogOption) {
 func AddLogAdapter(a adapter.Adapter) {
 	logger.AddLogAdapter(a)
 }
+
+func Flush() {
+	logger.Flush()
+}
