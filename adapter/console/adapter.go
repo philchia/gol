@@ -8,6 +8,8 @@ import (
 	"github.com/philchia/gol/adapter"
 )
 
+var _ adapter.Adapter = (*consoleAdapter)(nil)
+
 type consoleAdapter struct {
 	io.WriteCloser
 }

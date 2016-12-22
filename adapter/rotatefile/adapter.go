@@ -21,6 +21,8 @@ const (
 	YB
 )
 
+var _ adapter.Adapter = (*rotatefileAdapter)(nil)
+
 type rotatefileAdapter struct {
 	maxFileNum         int
 	maxByteSizePerFile ByteSize

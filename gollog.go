@@ -16,6 +16,9 @@ import (
 	"github.com/philchia/gol/internal"
 )
 
+// This works as a compiler check
+var _ Logger = (*gollog)(nil)
+
 type gollog struct {
 	level       LogLevel
 	option      LogOption
