@@ -30,8 +30,8 @@ type fileAdapter struct {
 	file        io.Writer
 }
 
-func NewAdapter(pathToFile string) adapter.Adapter {
-	file, err := os.Open(pathToFile)
+func NewAdapter(name string) adapter.Adapter {
+	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil
 	}
