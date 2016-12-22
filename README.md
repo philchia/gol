@@ -61,6 +61,7 @@ import (
     "runtime"
 )
 
+defer gol.Flush()
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 
@@ -74,6 +75,7 @@ import (
     "runtime"
 )
 
+defer gol.Flush()
 gol.AddLogAdapter(file.NewAdapter("/var/log/tmp.log"))
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
@@ -88,6 +90,7 @@ import (
     "runtime"
 )
 
+defer gol.Flush()
 gol.SetLevel(gol.ERROR)
 gol.Debug("Hello, gol!!!") // this will not print
 gol.Criticalf("Hello from %s", runtime.GOOS)
@@ -102,6 +105,7 @@ import (
     "runtime"
 )
 
+defer gol.Flush()
 gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
@@ -118,6 +122,7 @@ import (
     "runtime"
 )
 
+defer gol.Flush()
 gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
 gol.AddLogAdapter(a)
 gol.Debug("Hello, gol!!!")
