@@ -1,4 +1,4 @@
-# gol is a high performance async log kit for golang
+# gol: a high performance async log kit for golang
 
 [![Golang](https://img.shields.io/badge/Language-Go-green.svg?style=flat)](https://golang.org)
 [![Build Status](https://travis-ci.org/philchia/gol.svg?branch=master)](https://travis-ci.org/philchia/gol)
@@ -11,7 +11,7 @@
 
 ### Async
 
-gol is a high performance async log kit for golang, as of async, gol has a high speed.
+gol is a high performance async log kit for golang, as of async, gol has a high speed
 
 ### Level
 
@@ -46,7 +46,7 @@ type Adapter interface {
 
 ### Color
 
-gol also include a colorful output.
+gol also include a colorful output
 
 ![Colorful output](./assets/screen.png)
 
