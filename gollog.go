@@ -23,17 +23,13 @@ type gollog struct {
 }
 
 func (l *gollog) msgPump() {
-	for {
-		select {
-		case msg, ok := <-l.logChan:
-			if !ok {
-				break
-			}
-			for _, adap := range l.adapters {
-				adap.Write(internal.Str2bytes(msg))
-			}
+
+	for msg := range l.logChan {
+		for _, adap := range l.adapters {
+			adap.Write(internal.Str2bytes(msg))
 		}
 	}
+
 	close(l.doneChan)
 }
 
