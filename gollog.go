@@ -12,6 +12,8 @@ import (
 
 	"errors"
 
+	"sync"
+
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/internal"
 )
@@ -26,6 +28,7 @@ type gollog struct {
 	logChan     chan string
 	doneChan    chan struct{}
 	exitingFlag uint64
+	mutex       sync.RWMutex
 }
 
 func (l *gollog) exiting() bool {
@@ -43,9 +46,11 @@ func (l *gollog) setExiting(flag bool) {
 func (l *gollog) msgPump() {
 
 	for msg := range l.logChan {
+		l.mutex.RLock()
 		for _, adap := range l.adapters {
 			adap.Write(internal.Str2bytes(msg))
 		}
+		l.mutex.RUnlock()
 	}
 
 	close(l.doneChan)
@@ -242,19 +247,25 @@ func (l *gollog) SetOption(option LogOption) {
 
 // AddLogAdapter add a log adapter which implement the adapter.Adapter interface with give name key, return error if name already exists
 func (l *gollog) AddLogAdapter(name string, adapter adapter.Adapter) error {
+	l.mutex.Lock()
 	if _, ok := l.adapters[name]; ok {
+		l.mutex.Unlock()
 		return errors.New("Adapter already exists")
 	}
 	l.adapters[name] = adapter
+	l.mutex.Unlock()
 	return nil
 }
 
 // RemoveAdapter remove a log adapter with give name key, return error in name not exists
 func (l *gollog) RemoveAdapter(name string) error {
+	l.mutex.Lock()
 	if _, ok := l.adapters[name]; !ok {
+		l.mutex.Unlock()
 		return errors.New("Adapter not exists")
 	}
 	delete(l.adapters, name)
+	l.mutex.Unlock()
 	return nil
 }
 
