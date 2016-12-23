@@ -148,7 +148,7 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 - [X] Async write
 - [X] Colorful output
 - [X] Flush buffered log
-- [ ] Toggle console adapter
+- [X] Toggle console adapter
 - [ ] Level support for single adapter
 - [ ] Logrotate
 - [ ] Mail adapter
