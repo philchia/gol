@@ -30,9 +30,10 @@ type Logger interface {
 	Flush()
 }
 
+// CONSOLELOGGER represent the given console adapter name
 const CONSOLELOGGER = "console"
 
-// NewLogger create a Logger
+// NewLogger create a Logger with given log level
 func NewLogger(level LogLevel) Logger {
 	logger := &gollog{
 		level:    level,

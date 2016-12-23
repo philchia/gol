@@ -14,6 +14,7 @@ type fileAdapter struct {
 	io.WriteCloser
 }
 
+// NewAdapter create a file adapter with given file name, will automatically create a file if not exists
 func NewAdapter(name string) adapter.Adapter {
 	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

@@ -140,6 +140,7 @@ func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) string {
 	return internal.JoinStrings(prefix, level.ColorString(), "[", level.String(), "] ", ALL.ColorString(), msg, "\n")
 }
 
+// Debug will prinnt log as DEBUG level
 func (l *gollog) Debug(i ...interface{}) {
 	if l.level > DEBUG {
 		return
@@ -148,6 +149,7 @@ func (l *gollog) Debug(i ...interface{}) {
 	l.put(msg)
 }
 
+// Debugf will prinnt log as DEBUG level
 func (l *gollog) Debugf(format string, i ...interface{}) {
 	if l.level > DEBUG {
 		return
@@ -156,6 +158,7 @@ func (l *gollog) Debugf(format string, i ...interface{}) {
 	l.put(msg)
 }
 
+// Info will prinnt log as INFO level
 func (l *gollog) Info(i ...interface{}) {
 	if l.level > INFO {
 		return
@@ -164,6 +167,7 @@ func (l *gollog) Info(i ...interface{}) {
 	l.put(msg)
 }
 
+// Infof will prinnt log as INFO level
 func (l *gollog) Infof(format string, i ...interface{}) {
 	if l.level > INFO {
 		return
@@ -172,6 +176,7 @@ func (l *gollog) Infof(format string, i ...interface{}) {
 	l.put(msg)
 }
 
+// Warn will prinnt log as WARN level
 func (l *gollog) Warn(i ...interface{}) {
 	if l.level > WARN {
 		return
@@ -180,6 +185,7 @@ func (l *gollog) Warn(i ...interface{}) {
 	l.put(msg)
 }
 
+// Warnf will prinnt log as WARN level
 func (l *gollog) Warnf(format string, i ...interface{}) {
 	if l.level > WARN {
 		return
@@ -188,6 +194,7 @@ func (l *gollog) Warnf(format string, i ...interface{}) {
 	l.put(msg)
 }
 
+// Error will prinnt log as ERROR level
 func (l *gollog) Error(i ...interface{}) {
 	if l.level > ERROR {
 		return
@@ -196,6 +203,7 @@ func (l *gollog) Error(i ...interface{}) {
 	l.put(msg)
 }
 
+// Errorf will prinnt log as ERROR level
 func (l *gollog) Errorf(format string, i ...interface{}) {
 	if l.level > ERROR {
 		return
@@ -204,6 +212,7 @@ func (l *gollog) Errorf(format string, i ...interface{}) {
 	l.put(msg)
 }
 
+// Critical will prinnt log as CRITICAL level
 func (l *gollog) Critical(i ...interface{}) {
 	if l.level > CRITICAL {
 		return
@@ -212,6 +221,7 @@ func (l *gollog) Critical(i ...interface{}) {
 	l.put(msg)
 }
 
+// Criticalf will prinnt log as CRITICAL level
 func (l *gollog) Criticalf(format string, i ...interface{}) {
 	if l.level > CRITICAL {
 		return
@@ -220,14 +230,17 @@ func (l *gollog) Criticalf(format string, i ...interface{}) {
 	l.put(msg)
 }
 
+// SetLevel set the shared logger's log level
 func (l *gollog) SetLevel(level LogLevel) {
 	l.level = level
 }
 
+// SetOption set the shared logger's log options used to format log headerr
 func (l *gollog) SetOption(option LogOption) {
 	l.option = option
 }
 
+// AddLogAdapter add a log adapter which implement the adapter.Adapter interface with give name key, return error if name already exists
 func (l *gollog) AddLogAdapter(name string, adapter adapter.Adapter) error {
 	if _, ok := l.adapters[name]; ok {
 		return errors.New("Adapter already exists")
@@ -236,6 +249,7 @@ func (l *gollog) AddLogAdapter(name string, adapter adapter.Adapter) error {
 	return nil
 }
 
+// RemoveAdapter remove a log adapter with give name key, return error in name not exists
 func (l *gollog) RemoveAdapter(name string) error {
 	if _, ok := l.adapters[name]; !ok {
 		return errors.New("Adapter not exists")
@@ -244,6 +258,7 @@ func (l *gollog) RemoveAdapter(name string) error {
 	return nil
 }
 
+// Flush flush all buffered log and call Close() on all adapters
 func (l *gollog) Flush() {
 	l.setExiting(true)
 	close(l.logChan)

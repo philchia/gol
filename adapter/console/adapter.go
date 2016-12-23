@@ -14,6 +14,7 @@ type consoleAdapter struct {
 	io.WriteCloser
 }
 
+// NewAdapter create a console adapter
 func NewAdapter() adapter.Adapter {
 	return &consoleAdapter{
 		os.Stderr,
