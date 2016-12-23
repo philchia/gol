@@ -22,6 +22,7 @@ func (w *ReadWriter) Write(b []byte) (int, error) {
 
 // Close will do nothing
 func (w *ReadWriter) Close() error {
+	w.b = w.b[0:0]
 	return nil
 }
 

@@ -21,6 +21,7 @@ func (w *Writer) Write(b []byte) (int, error) {
 
 // Close will do nothing
 func (w *Writer) Close() error {
+	w.b = w.b[0:0]
 	return nil
 }
 
