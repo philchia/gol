@@ -2,7 +2,7 @@ package internal
 
 import "unsafe"
 
-// JoinStrings join slice strings with ""
+// JoinStrings concatenate slice strings with ""
 func JoinStrings(strs ...string) string {
 	ln := 0
 	for i := 0; i < len(strs); i++ {
@@ -27,4 +27,19 @@ func Str2bytes(s string) []byte {
 // Bytes2str trans bytes to string
 func Bytes2str(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+// JoinBytes concatenate all bytes
+func JoinBytes(bts ...[]byte) []byte {
+	ln := 0
+	for i := 0; i < len(bts); i++ {
+		ln += len(bts[i])
+	}
+	ret := make([]byte, ln)
+	ln = 0
+	for _, b := range bts {
+		ln += copy(ret[ln:], b)
+	}
+
+	return ret
 }
