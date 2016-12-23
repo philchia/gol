@@ -103,3 +103,33 @@ func TestBytes2str(t *testing.T) {
 		})
 	}
 }
+
+func TestJoinBytes(t *testing.T) {
+	type args struct {
+		bts [][]byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{
+			"case1",
+			args{
+				[][]byte{
+					[]byte("Hello"),
+					[]byte(" world"),
+					[]byte("!!!"),
+				},
+			},
+			[]byte("Hello world!!!"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JoinBytes(tt.args.bts...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("JoinBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
