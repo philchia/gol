@@ -13,37 +13,37 @@ func TestLogLevel_String(t *testing.T) {
 		{
 			"case1",
 			DEBUG,
-			"DEBUG",
+			"[DEBUG]",
 		},
 		{
 			"case2",
 			ALL,
-			"ALL",
+			"[ALL]",
 		},
 		{
 			"case3",
 			INFO,
-			"INFO",
+			"[INFO]",
 		},
 		{
 			"case4",
 			WARN,
-			"WARN",
+			"[WARN]",
 		},
 		{
 			"case5",
 			ERROR,
-			"ERROR",
+			"[ERROR]",
 		},
 		{
 			"case6",
 			CRITICAL,
-			"CRITICAL",
+			"[CRITICAL]",
 		},
 		{
 			"case7",
 			LogLevel(10),
-			"UNKNOWN LOG LEVEL",
+			"[UNKNOWN LOG LEVEL]",
 		},
 	}
 	for _, tt := range tests {

@@ -5,17 +5,18 @@ import (
 
 	"github.com/philchia/gol/adapter"
 
+	"log"
 	"reflect"
 	"sync"
 )
 
-type fakeWriter struct {
+type fakeReadWriter struct {
 	withErr error
 	wg      sync.WaitGroup
 	b       []byte
 }
 
-func (w *fakeWriter) Write(b []byte) (int, error) {
+func (w *fakeReadWriter) Write(b []byte) (int, error) {
 	defer w.wg.Done()
 	if w.withErr != nil {
 		return 0, w.withErr
@@ -24,17 +25,34 @@ func (w *fakeWriter) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-func (w *fakeWriter) Close() error {
+func (w *fakeReadWriter) Close() error {
 	return nil
 }
 
-func (w *fakeWriter) Read() []byte {
+func (w *fakeReadWriter) Read() []byte {
 	w.wg.Add(1)
 	w.wg.Wait()
 	return w.b
 }
 
-var _adapter = new(fakeWriter)
+type fakeWriter struct {
+	withErr error
+	b       []byte
+}
+
+func (w *fakeWriter) Write(b []byte) (int, error) {
+	if w.withErr != nil {
+		return 0, w.withErr
+	}
+	w.b = append(w.b, b...)
+	return len(b), nil
+}
+
+func (w *fakeWriter) Close() error {
+	return nil
+}
+
+var _adapter = new(fakeReadWriter)
 
 func init() {
 	logger.AddLogAdapter("fake", _adapter)
@@ -56,7 +74,7 @@ func TestDebug(t *testing.T) {
 			args{
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[32m[DEBUG] \033[0mHello world\n"),
+			[]byte("\033[32m[DEBUG]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -85,7 +103,7 @@ func TestDebugf(t *testing.T) {
 				"%s",
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[32m[DEBUG] \033[0mHello world\n"),
+			[]byte("\033[32m[DEBUG]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -112,7 +130,7 @@ func TestInfo(t *testing.T) {
 			args{
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[34m[INFO] \033[0mHello world\n"),
+			[]byte("\033[34m[INFO]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -141,7 +159,7 @@ func TestInfof(t *testing.T) {
 				"%s",
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[34m[INFO] \033[0mHello world\n"),
+			[]byte("\033[34m[INFO]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -168,7 +186,7 @@ func TestWarn(t *testing.T) {
 			args{
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[33m[WARN] \033[0mHello world\n"),
+			[]byte("\033[33m[WARN]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -197,7 +215,7 @@ func TestWarnf(t *testing.T) {
 				"%s",
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[33m[WARN] \033[0mHello world\n"),
+			[]byte("\033[33m[WARN]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -224,7 +242,7 @@ func TestError(t *testing.T) {
 			args{
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[31m[ERROR] \033[0mHello world\n"),
+			[]byte("\033[31m[ERROR]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -253,7 +271,7 @@ func TestErrorf(t *testing.T) {
 				"%s",
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[31m[ERROR] \033[0mHello world\n"),
+			[]byte("\033[31m[ERROR]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -280,7 +298,7 @@ func TestCritical(t *testing.T) {
 			args{
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[35m[CRITICAL] \033[0mHello world\n"),
+			[]byte("\033[35m[CRITICAL]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -309,7 +327,7 @@ func TestCriticalf(t *testing.T) {
 				"%s",
 				[]interface{}{"Hello world"},
 			},
-			[]byte("\033[35m[CRITICAL] \033[0mHello world\n"),
+			[]byte("\033[35m[CRITICAL]\033[0m Hello world\n"),
 		},
 	}
 	for _, tt := range tests {
@@ -419,7 +437,7 @@ func TestAddLogAdapter(t *testing.T) {
 			"case1",
 			args{
 				"fake1",
-				new(fakeWriter),
+				new(fakeReadWriter),
 			},
 			false,
 		},
@@ -427,7 +445,7 @@ func TestAddLogAdapter(t *testing.T) {
 			"case2",
 			args{
 				"fake",
-				new(fakeWriter),
+				new(fakeReadWriter),
 			},
 			true,
 		},
@@ -489,9 +507,29 @@ func TestFlush(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Flush()
-			if got := logger.(*gollog).exiting(); got != tt.want {
-				t.Errorf("Flush() got exiting = %v, wantErr %v", got, tt.want)
-			}
 		})
+	}
+}
+
+func BenchmarkLog(b *testing.B) {
+	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", 0)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 100; j++ {
+			l.Println("Hello")
+		}
+	}
+}
+
+func BenchmarkGol(b *testing.B) {
+	g := NewLogger(DEBUG)
+	g.RemoveAdapter(CONSOLELOGGER)
+	g.SetOption(0)
+	g.AddLogAdapter("fake", new(fakeWriter))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 100; j++ {
+			g.Debug("Hello")
+		}
 	}
 }

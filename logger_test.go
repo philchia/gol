@@ -19,7 +19,7 @@ func TestNewLogger(t *testing.T) {
 			&gollog{
 				level:   DEBUG,
 				option:  LstdFlags,
-				logChan: make(chan string, 1024),
+				logChan: make(chan []byte, 1024),
 			},
 		},
 	}

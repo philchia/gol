@@ -28,12 +28,12 @@ var colorMap = map[LogLevel]string{
 }
 
 var levelMap = map[LogLevel]string{
-	ALL:      "ALL",
-	DEBUG:    "DEBUG",
-	INFO:     "INFO",
-	WARN:     "WARN",
-	ERROR:    "ERROR",
-	CRITICAL: "CRITICAL",
+	ALL:      "[ALL]",
+	DEBUG:    "[DEBUG]",
+	INFO:     "[INFO]",
+	WARN:     "[WARN]",
+	ERROR:    "[ERROR]",
+	CRITICAL: "[CRITICAL]",
 }
 
 // ColorString return the ascii color code represent the given log level
@@ -49,5 +49,5 @@ func (level LogLevel) String() string {
 	if ret, ok := levelMap[level]; ok {
 		return ret
 	}
-	return "UNKNOWN LOG LEVEL"
+	return "[UNKNOWN LOG LEVEL]"
 }

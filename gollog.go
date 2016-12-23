@@ -3,52 +3,35 @@ package gol
 import (
 	"fmt"
 	"runtime"
-
-	"bytes"
-
 	"time"
 
-	"sync/atomic"
+	"bytes"
 
 	"errors"
 
 	"sync"
 
 	"github.com/philchia/gol/adapter"
-	"github.com/philchia/gol/internal"
 )
 
 // This works as a compiler check
 var _ Logger = (*gollog)(nil)
 
 type gollog struct {
-	level       LogLevel
-	option      LogOption
-	adapters    map[string]adapter.Adapter
-	logChan     chan string
-	doneChan    chan struct{}
-	exitingFlag uint64
-	mutex       sync.RWMutex
-}
-
-func (l *gollog) exiting() bool {
-	return atomic.LoadUint64(&l.exitingFlag) == 1
-}
-
-func (l *gollog) setExiting(flag bool) {
-	if flag {
-		atomic.StoreUint64(&l.exitingFlag, 1)
-	} else {
-		atomic.StoreUint64(&l.exitingFlag, 0)
-	}
+	level    LogLevel
+	option   LogOption
+	adapters map[string]adapter.Adapter
+	logChan  chan []byte
+	doneChan chan struct{}
+	mutex    sync.RWMutex
 }
 
 func (l *gollog) msgPump() {
 
 	for msg := range l.logChan {
 		l.mutex.RLock()
-		for _, adap := range l.adapters {
-			adap.Write(internal.Str2bytes(msg))
+		for k := range l.adapters {
+			l.adapters[k].Write(msg)
 		}
 		l.mutex.RUnlock()
 	}
@@ -56,10 +39,7 @@ func (l *gollog) msgPump() {
 	close(l.doneChan)
 }
 
-func (l *gollog) put(msg string) {
-	if l.exiting() {
-		return
-	}
+func (l *gollog) put(msg []byte) {
 	l.logChan <- msg
 }
 
@@ -80,33 +60,32 @@ func itoa(buf *bytes.Buffer, i int, wid int) {
 	buf.Write(b[bp:])
 }
 
-func (l *gollog) generatePrefix(callDepth int) string {
-	var buf bytes.Buffer
+func (l *gollog) generatePrefix(buf *bytes.Buffer, callDepth int) {
 
-	var t = time.Now()
-	if l.option&LUTC != 0 {
-		t = t.UTC()
-	}
 	if l.option&(Ldate|Ltime|Lmicroseconds) != 0 {
+		var t = time.Now()
+		if l.option&LUTC != 0 {
+			t = t.UTC()
+		}
 		if l.option&Ldate != 0 {
 			year, month, day := t.Date()
-			itoa(&buf, year, 4)
+			itoa(buf, year, 4)
 			buf.WriteByte('/')
-			itoa(&buf, int(month), 2)
+			itoa(buf, int(month), 2)
 			buf.WriteByte('/')
-			itoa(&buf, day, 2)
+			itoa(buf, day, 2)
 			buf.WriteByte(' ')
 		}
 		if l.option&(Ltime|Lmicroseconds) != 0 {
 			hour, min, sec := t.Clock()
-			itoa(&buf, hour, 2)
+			itoa(buf, hour, 2)
 			buf.WriteByte(':')
-			itoa(&buf, min, 2)
+			itoa(buf, min, 2)
 			buf.WriteByte(':')
-			itoa(&buf, sec, 2)
+			itoa(buf, sec, 2)
 			if l.option&Lmicroseconds != 0 {
 				buf.WriteByte('.')
-				itoa(&buf, t.Nanosecond()/1e3, 6)
+				itoa(buf, t.Nanosecond()/1e3, 6)
 			}
 			buf.WriteByte(' ')
 		}
@@ -133,16 +112,30 @@ func (l *gollog) generatePrefix(callDepth int) string {
 		}
 		buf.WriteString(file)
 		buf.WriteByte(':')
-		itoa(&buf, line, -1)
+		itoa(buf, line, -1)
 		buf.WriteString(": ")
 	}
 
-	return buf.String()
 }
 
-func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) string {
-	prefix := l.generatePrefix(callDepth)
-	return internal.JoinStrings(prefix, level.ColorString(), "[", level.String(), "] ", ALL.ColorString(), msg, "\n")
+func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, msg string) {
+	l.generatePrefix(buf, callDepth)
+
+	buf.WriteString(level.ColorString())
+	buf.WriteString(level.String())
+	buf.WriteString(ALL.ColorString())
+	buf.WriteByte(' ')
+	buf.WriteString(msg)
+	buf.WriteByte('\n')
+}
+
+func (l *gollog) output(callDepth int, level LogLevel, msg string) {
+	buf := bufferPoolGet()
+	buf.Reset()
+	l.generateLog(buf, callDepth, level, msg)
+	bts := buf.Bytes()
+	bufferPoolPut(buf)
+	l.put(bts)
 }
 
 // Debug will prinnt log as DEBUG level
@@ -150,8 +143,7 @@ func (l *gollog) Debug(i ...interface{}) {
 	if l.level > DEBUG {
 		return
 	}
-	msg := l.generateLog(2, DEBUG, fmt.Sprint(i...))
-	l.put(msg)
+	l.output(2, DEBUG, fmt.Sprint(i...))
 }
 
 // Debugf will prinnt log as DEBUG level
@@ -159,8 +151,7 @@ func (l *gollog) Debugf(format string, i ...interface{}) {
 	if l.level > DEBUG {
 		return
 	}
-	msg := l.generateLog(2, DEBUG, fmt.Sprintf(format, i...))
-	l.put(msg)
+	l.output(2, DEBUG, fmt.Sprintf(format, i...))
 }
 
 // Info will prinnt log as INFO level
@@ -168,8 +159,7 @@ func (l *gollog) Info(i ...interface{}) {
 	if l.level > INFO {
 		return
 	}
-	msg := l.generateLog(2, INFO, fmt.Sprint(i...))
-	l.put(msg)
+	l.output(2, INFO, fmt.Sprint(i...))
 }
 
 // Infof will prinnt log as INFO level
@@ -177,8 +167,7 @@ func (l *gollog) Infof(format string, i ...interface{}) {
 	if l.level > INFO {
 		return
 	}
-	msg := l.generateLog(2, INFO, fmt.Sprintf(format, i...))
-	l.put(msg)
+	l.output(2, INFO, fmt.Sprintf(format, i...))
 }
 
 // Warn will prinnt log as WARN level
@@ -186,8 +175,7 @@ func (l *gollog) Warn(i ...interface{}) {
 	if l.level > WARN {
 		return
 	}
-	msg := l.generateLog(2, WARN, fmt.Sprint(i...))
-	l.put(msg)
+	l.output(2, WARN, fmt.Sprint(i...))
 }
 
 // Warnf will prinnt log as WARN level
@@ -195,8 +183,7 @@ func (l *gollog) Warnf(format string, i ...interface{}) {
 	if l.level > WARN {
 		return
 	}
-	msg := l.generateLog(2, WARN, fmt.Sprintf(format, i...))
-	l.put(msg)
+	l.output(2, WARN, fmt.Sprintf(format, i...))
 }
 
 // Error will prinnt log as ERROR level
@@ -204,8 +191,7 @@ func (l *gollog) Error(i ...interface{}) {
 	if l.level > ERROR {
 		return
 	}
-	msg := l.generateLog(2, ERROR, fmt.Sprint(i...))
-	l.put(msg)
+	l.output(2, ERROR, fmt.Sprint(i...))
 }
 
 // Errorf will prinnt log as ERROR level
@@ -213,8 +199,7 @@ func (l *gollog) Errorf(format string, i ...interface{}) {
 	if l.level > ERROR {
 		return
 	}
-	msg := l.generateLog(2, ERROR, fmt.Sprintf(format, i...))
-	l.put(msg)
+	l.output(2, ERROR, fmt.Sprintf(format, i...))
 }
 
 // Critical will prinnt log as CRITICAL level
@@ -222,8 +207,7 @@ func (l *gollog) Critical(i ...interface{}) {
 	if l.level > CRITICAL {
 		return
 	}
-	msg := l.generateLog(2, CRITICAL, fmt.Sprint(i...))
-	l.put(msg)
+	l.output(2, CRITICAL, fmt.Sprint(i...))
 }
 
 // Criticalf will prinnt log as CRITICAL level
@@ -231,8 +215,7 @@ func (l *gollog) Criticalf(format string, i ...interface{}) {
 	if l.level > CRITICAL {
 		return
 	}
-	msg := l.generateLog(2, CRITICAL, fmt.Sprintf(format, i...))
-	l.put(msg)
+	l.output(2, CRITICAL, fmt.Sprintf(format, i...))
 }
 
 // SetLevel set the shared logger's log level
@@ -271,7 +254,6 @@ func (l *gollog) RemoveAdapter(name string) error {
 
 // Flush flush all buffered log and call Close() on all adapters
 func (l *gollog) Flush() {
-	l.setExiting(true)
 	close(l.logChan)
 	<-l.doneChan
 	for _, c := range l.adapters {
