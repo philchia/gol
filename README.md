@@ -145,6 +145,12 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 
     $godoc github.com/philchia/gol
 
+## Benchmark
+
+gol include a benchmark against the builtin log package, run `$go test ./... -bench . -benchmem` in your terminal to run the bench
+
+![Benchmark](./assets/bench.png)
+
 ## Features
 
 - [X] Log level support
