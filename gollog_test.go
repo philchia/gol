@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/adapter/fakeSync"
 )
 
 var _logger = NewLogger(DEBUG)
-var _loggerAdapter = new(fakeReadWriter)
+var _loggerAdapter = fakeSync.NewAdapter()
 
 func init() {
 
@@ -394,7 +395,7 @@ func Test_gollog_AddLogAdapter(t *testing.T) {
 			"case1",
 			args{
 				"fake1",
-				new(fakeReadWriter),
+				fakeSync.NewAdapter(),
 			},
 			false,
 		},
@@ -402,7 +403,7 @@ func Test_gollog_AddLogAdapter(t *testing.T) {
 			"case2",
 			args{
 				"fake",
-				new(fakeReadWriter),
+				fakeSync.NewAdapter(),
 			},
 			true,
 		},

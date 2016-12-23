@@ -4,57 +4,13 @@ import (
 	"testing"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/adapter/fakeSync"
 
 	"log"
 	"reflect"
-	"sync"
-	"time"
 )
 
-type fakeReadWriter struct {
-	withErr error
-	wg      sync.WaitGroup
-	b       []byte
-}
-
-func (w *fakeReadWriter) Write(b []byte) (int, error) {
-	defer w.wg.Done()
-	if w.withErr != nil {
-		return 0, w.withErr
-	}
-	w.b = b
-	return len(b), nil
-}
-
-func (w *fakeReadWriter) Close() error {
-	return nil
-}
-
-func (w *fakeReadWriter) Read() []byte {
-	w.wg.Add(1)
-	w.wg.Wait()
-	return w.b
-}
-
-type fakeWriter struct {
-	withErr error
-	b       []byte
-}
-
-func (w *fakeWriter) Write(b []byte) (int, error) {
-	if w.withErr != nil {
-		return 0, w.withErr
-	}
-	time.Sleep(time.Nanosecond * 10)
-	w.b = append(w.b, b...)
-	return len(b), nil
-}
-
-func (w *fakeWriter) Close() error {
-	return nil
-}
-
-var _adapter = new(fakeReadWriter)
+var _adapter = fakeSync.NewAdapter()
 
 func init() {
 	logger.AddLogAdapter("fake", _adapter)
@@ -439,7 +395,7 @@ func TestAddLogAdapter(t *testing.T) {
 			"case1",
 			args{
 				"fake1",
-				new(fakeReadWriter),
+				fakeSync.NewAdapter(),
 			},
 			false,
 		},
@@ -447,7 +403,7 @@ func TestAddLogAdapter(t *testing.T) {
 			"case2",
 			args{
 				"fake",
-				new(fakeReadWriter),
+				fakeSync.NewAdapter(),
 			},
 			true,
 		},
@@ -514,7 +470,7 @@ func TestFlush(t *testing.T) {
 }
 
 func BenchmarkLog(b *testing.B) {
-	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
+	l := log.New(fakeSync.NewAdapter(), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -526,7 +482,7 @@ func BenchmarkGol(b *testing.B) {
 	g := NewLogger(DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
 	// g.SetOption(0)
-	g.AddLogAdapter("fake", new(fakeWriter))
+	g.AddLogAdapter("fake", fakeSync.NewAdapter())
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		g.Debug("Hello")
@@ -534,7 +490,7 @@ func BenchmarkGol(b *testing.B) {
 }
 
 func BenchmarkMultiThreadLog(b *testing.B) {
-	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
+	l := log.New(fakeSync.NewAdapter(), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -547,7 +503,7 @@ func BenchmarkMultiThreadLog(b *testing.B) {
 func BenchmarkMultiThreadGol(b *testing.B) {
 	g := NewLogger(DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
-	g.AddLogAdapter("fake", new(fakeWriter))
+	g.AddLogAdapter("fake", fakeSync.NewAdapter())
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < 10; j++ {
