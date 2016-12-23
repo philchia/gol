@@ -9,8 +9,6 @@ import (
 
 	"errors"
 
-	"sync"
-
 	"github.com/philchia/gol/adapter"
 )
 
@@ -23,17 +21,15 @@ type gollog struct {
 	adapters map[string]adapter.Adapter
 	logChan  chan []byte
 	doneChan chan struct{}
-	mutex    sync.RWMutex
+	// mutex    sync.RWMutex
 }
 
 func (l *gollog) msgPump() {
 
 	for msg := range l.logChan {
-		l.mutex.RLock()
 		for k := range l.adapters {
 			l.adapters[k].Write(msg)
 		}
-		l.mutex.RUnlock()
 	}
 
 	close(l.doneChan)
@@ -229,26 +225,41 @@ func (l *gollog) SetOption(option LogOption) {
 }
 
 // AddLogAdapter add a log adapter which implement the adapter.Adapter interface with give name key, return error if name already exists
-func (l *gollog) AddLogAdapter(name string, adapter adapter.Adapter) error {
-	l.mutex.Lock()
+func (l *gollog) AddLogAdapter(name string, adp adapter.Adapter) error {
+
 	if _, ok := l.adapters[name]; ok {
-		l.mutex.Unlock()
+
 		return errors.New("Adapter already exists")
 	}
-	l.adapters[name] = adapter
-	l.mutex.Unlock()
+
+	tmpAdapters := make(map[string]adapter.Adapter, len(l.adapters)+1)
+
+	for k, v := range l.adapters {
+		tmpAdapters[k] = v
+	}
+
+	tmpAdapters[name] = adp
+	l.adapters = tmpAdapters
+
 	return nil
 }
 
 // RemoveAdapter remove a log adapter with give name key, return error in name not exists
 func (l *gollog) RemoveAdapter(name string) error {
-	l.mutex.Lock()
 	if _, ok := l.adapters[name]; !ok {
-		l.mutex.Unlock()
 		return errors.New("Adapter not exists")
 	}
-	delete(l.adapters, name)
-	l.mutex.Unlock()
+
+	tmpAdapters := make(map[string]adapter.Adapter, len(l.adapters)-1)
+
+	for k, v := range l.adapters {
+		if k != name {
+			tmpAdapters[k] = v
+		}
+	}
+
+	l.adapters = tmpAdapters
+
 	return nil
 }
 

@@ -514,9 +514,10 @@ func TestFlush(t *testing.T) {
 func BenchmarkLog(b *testing.B) {
 	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", 0)
 	b.ResetTimer()
+
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 100; j++ {
-			l.Println("Hello")
+		for j := 0; j < 1000; j++ {
+			go l.Println("Hello")
 		}
 	}
 }
@@ -528,8 +529,8 @@ func BenchmarkGol(b *testing.B) {
 	g.AddLogAdapter("fake", new(fakeWriter))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 100; j++ {
-			g.Debug("Hello")
+		for j := 0; j < 1000; j++ {
+			go g.Debug("Hello")
 		}
 	}
 }
