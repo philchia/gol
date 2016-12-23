@@ -1,5 +1,7 @@
 # gol: a high performance async log kit for golang
 
+gol is a high performance async log infrastructure for golang, which include several useful log backend adapters, include file/file rotate/stmp/slack/elasticsearch etc...
+
 [![Golang](https://img.shields.io/badge/Language-Go-green.svg?style=flat)](https://golang.org)
 [![Build Status](https://travis-ci.org/philchia/gol.svg?branch=master)](https://travis-ci.org/philchia/gol)
 [![Coverage Status](https://coveralls.io/repos/github/philchia/gol/badge.svg?branch=master)](https://coveralls.io/github/philchia/gol?branch=master)
@@ -9,13 +11,9 @@
 
 ## Introduce
 
-### Async
-
-gol is a high performance async log kit for golang, as of async, gol has a high speed
-
 ### Level
 
-gol support log level
+gol support various log levels, you can set the logger's level to disable some lower level output
 
 ```go
 const (
@@ -28,11 +26,18 @@ const (
 )
 ```
 
-### Log rotate
+### Built in adapters
 
-gol has a built in file adapter which support automatically rotate within log files, also customizable rotate count and file size limits
+gol has several built in adapters
 
-### Customize backend output
+- Console adapter support write log to stderr, and this is the default adapter
+- File adapter support write log to file
+- File rotate adapter support write log to rotate files **Imcomplete**
+- Stmp adapter support write log to email **Imcomplete**
+- Slack adapter support write log to given slack channel **Imcomplete**
+- ES adapter support write log to elastic search **Imcomplete**
+
+### Customize backend adapters
 
 You can create any backend adapter which implement the Adapter interface.
 
@@ -157,4 +162,4 @@ For docs, see [Documentation](http://godoc.org/github.com/philchia/gol "GoDoc") 
 
 ## License
 
-gol code is published under MIT license
+gol code is published under the MIT license
