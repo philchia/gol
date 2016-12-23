@@ -1,5 +1,9 @@
 package gol
 
+import (
+	"github.com/philchia/gol/internal"
+)
+
 // LogLevel represent the level of the logger
 type LogLevel int8
 
@@ -18,26 +22,26 @@ const (
 	CRITICAL
 )
 
-var colorMap = map[LogLevel]string{
-	ALL:      "\033[0m",
-	DEBUG:    "\033[32m",
-	INFO:     "\033[34m",
-	WARN:     "\033[33m",
-	ERROR:    "\033[31m",
-	CRITICAL: "\033[35m",
+var colorMap = map[LogLevel][]byte{
+	ALL:      []byte("\033[0m"),
+	DEBUG:    []byte("\033[32m"),
+	INFO:     []byte("\033[34m"),
+	WARN:     []byte("\033[33m"),
+	ERROR:    []byte("\033[31m"),
+	CRITICAL: []byte("\033[35m"),
 }
 
-var levelMap = map[LogLevel]string{
-	ALL:      "[ALL]",
-	DEBUG:    "[DEBUG]",
-	INFO:     "[INFO]",
-	WARN:     "[WARN]",
-	ERROR:    "[ERROR]",
-	CRITICAL: "[CRITICAL]",
+var levelMap = map[LogLevel][]byte{
+	ALL:      []byte("[ALL]"),
+	DEBUG:    []byte("[DEBUG]"),
+	INFO:     []byte("[INFO]"),
+	WARN:     []byte("[WARN]"),
+	ERROR:    []byte("[ERROR]"),
+	CRITICAL: []byte("[CRITICAL]"),
 }
 
 // ColorString return the ascii color code represent the given log level
-func (level LogLevel) ColorString() string {
+func (level LogLevel) ColorString() []byte {
 	if ret, ok := colorMap[level]; ok {
 		return ret
 	}
@@ -45,9 +49,9 @@ func (level LogLevel) ColorString() string {
 }
 
 // String return the level string
-func (level LogLevel) String() string {
+func (level LogLevel) String() []byte {
 	if ret, ok := levelMap[level]; ok {
 		return ret
 	}
-	return "[UNKNOWN LOG LEVEL]"
+	return internal.Str2bytes("[UNKNOWN LOG LEVEL]")
 }

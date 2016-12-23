@@ -38,7 +38,7 @@ func NewLogger(level LogLevel) Logger {
 	logger := &gollog{
 		level:    level,
 		option:   LstdFlags,
-		logChan:  make(chan []byte, 1<<20),
+		logChan:  make(chan []byte, 10240),
 		doneChan: make(chan struct{}),
 		adapters: make(map[string]adapter.Adapter, 1),
 	}

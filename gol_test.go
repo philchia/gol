@@ -8,6 +8,7 @@ import (
 	"log"
 	"reflect"
 	"sync"
+	"time"
 )
 
 type fakeReadWriter struct {
@@ -44,6 +45,7 @@ func (w *fakeWriter) Write(b []byte) (int, error) {
 	if w.withErr != nil {
 		return 0, w.withErr
 	}
+	time.Sleep(time.Nanosecond * 10)
 	w.b = append(w.b, b...)
 	return len(b), nil
 }
@@ -512,24 +514,43 @@ func TestFlush(t *testing.T) {
 }
 
 func BenchmarkLog(b *testing.B) {
-	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", 0)
+	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 1000; j++ {
-			go l.Println("Hello")
-		}
+		go l.Println("Hello")
 	}
 }
 
 func BenchmarkGol(b *testing.B) {
 	g := NewLogger(DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
-	g.SetOption(0)
+	// g.SetOption(0)
 	g.AddLogAdapter("fake", new(fakeWriter))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 1000; j++ {
+		g.Debug("Hello")
+	}
+}
+
+func BenchmarkMultiThreadLog(b *testing.B) {
+	l := log.New(new(fakeWriter), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 10; j++ {
+			go l.Println("Hello")
+		}
+	}
+}
+
+func BenchmarkMultiThreadGol(b *testing.B) {
+	g := NewLogger(DEBUG)
+	g.RemoveAdapter(CONSOLELOGGER)
+	g.AddLogAdapter("fake", new(fakeWriter))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 10; j++ {
 			go g.Debug("Hello")
 		}
 	}

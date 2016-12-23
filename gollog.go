@@ -42,7 +42,7 @@ func (l *gollog) put(msg []byte) {
 // itoa: Cheap integer to fixed-width decimal ASCII.  Give a negative width to avoid zero-padding.
 func itoa(buf *bytes.Buffer, i int, wid int) {
 	// Assemble decimal in reverse order.
-	var b [20]byte
+	var b [8]byte
 	bp := len(b) - 1
 	for i >= 10 || wid > 1 {
 		wid--
@@ -117,9 +117,9 @@ func (l *gollog) generatePrefix(buf *bytes.Buffer, callDepth int) {
 func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, msg string) {
 	l.generatePrefix(buf, callDepth)
 
-	buf.WriteString(level.ColorString())
-	buf.WriteString(level.String())
-	buf.WriteString(ALL.ColorString())
+	buf.Write(level.ColorString())
+	buf.Write(level.String())
+	buf.Write(ALL.ColorString())
 	buf.WriteByte(' ')
 	buf.WriteString(msg)
 	buf.WriteByte('\n')
@@ -127,7 +127,6 @@ func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, m
 
 func (l *gollog) output(callDepth int, level LogLevel, msg string) {
 	buf := bufferPoolGet()
-	buf.Reset()
 	l.generateLog(buf, callDepth, level, msg)
 	bts := buf.Bytes()
 	bufferPoolPut(buf)

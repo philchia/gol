@@ -48,7 +48,7 @@ func TestLogLevel_String(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.level.String(); got != tt.want {
+			if got := tt.level.String(); string(got) != tt.want {
 				t.Errorf("LogLevel.String() = %v, want %v", got, tt.want)
 			}
 		})
@@ -99,7 +99,7 @@ func TestLogLevel_ColorString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.level.ColorString(); got != tt.want {
+			if got := tt.level.ColorString(); string(got) != tt.want {
 				t.Errorf("LogLevel.ColorString() = %v, want %v", got, tt.want)
 			}
 		})
