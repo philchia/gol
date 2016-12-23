@@ -9,6 +9,8 @@ import (
 
 	"errors"
 
+	"io"
+
 	"github.com/philchia/gol/adapter"
 )
 
@@ -19,24 +21,25 @@ type gollog struct {
 	level    LogLevel
 	option   LogOption
 	adapters map[string]adapter.Adapter
-	logChan  chan []byte
+	logChan  chan *bytes.Buffer
 	doneChan chan struct{}
 	// mutex    sync.RWMutex
 }
 
 func (l *gollog) msgPump() {
 
-	for msg := range l.logChan {
+	for buf := range l.logChan {
 		for k := range l.adapters {
-			l.adapters[k].Write(msg)
+			io.Copy(l.adapters[k], buf)
 		}
+		bufferPoolPut(buf)
 	}
 
 	close(l.doneChan)
 }
 
-func (l *gollog) put(msg []byte) {
-	l.logChan <- msg
+func (l *gollog) put(buf *bytes.Buffer) {
+	l.logChan <- buf
 }
 
 // itoa: Cheap integer to fixed-width decimal ASCII.  Give a negative width to avoid zero-padding.
@@ -128,9 +131,8 @@ func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, m
 func (l *gollog) output(callDepth int, level LogLevel, msg string) {
 	buf := bufferPoolGet()
 	l.generateLog(buf, callDepth, level, msg)
-	bts := buf.Bytes()
-	bufferPoolPut(buf)
-	l.put(bts)
+
+	l.put(buf)
 }
 
 // Debug will prinnt log as DEBUG level

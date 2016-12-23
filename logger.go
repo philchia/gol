@@ -1,6 +1,8 @@
 package gol
 
 import (
+	"bytes"
+
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/adapter/console"
 )
@@ -38,7 +40,7 @@ func NewLogger(level LogLevel) Logger {
 	logger := &gollog{
 		level:    level,
 		option:   LstdFlags,
-		logChan:  make(chan []byte, 10240),
+		logChan:  make(chan *bytes.Buffer, 10240),
 		doneChan: make(chan struct{}),
 		adapters: make(map[string]adapter.Adapter, 1),
 	}

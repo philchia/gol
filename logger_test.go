@@ -1,6 +1,9 @@
 package gol
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func TestNewLogger(t *testing.T) {
 	type args struct {
@@ -19,7 +22,7 @@ func TestNewLogger(t *testing.T) {
 			&gollog{
 				level:   DEBUG,
 				option:  LstdFlags,
-				logChan: make(chan []byte, 1024),
+				logChan: make(chan *bytes.Buffer, 1024),
 			},
 		},
 	}
