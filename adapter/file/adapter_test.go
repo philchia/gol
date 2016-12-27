@@ -19,13 +19,6 @@ func TestNewAdapter(t *testing.T) {
 			false,
 		},
 		{
-			"case2",
-			args{
-				`../assets/test.log`,
-			},
-			true,
-		},
-		{
 			"case3",
 			args{
 				`$#@@^&*&\|||\\\\///assets/test.log`,

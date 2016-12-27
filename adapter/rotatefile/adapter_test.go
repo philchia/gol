@@ -25,7 +25,7 @@ func TestNewAdapter(t *testing.T) {
 		{
 			"case2",
 			args{
-				`../assets/test.log`,
+				`......./assets/test.log`,
 				2,
 				MB,
 			},

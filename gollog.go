@@ -29,8 +29,8 @@ type gollog struct {
 func (l *gollog) msgPump() {
 
 	for buf := range l.logChan {
-		for k := range l.adapters {
-			io.Copy(l.adapters[k], buf)
+		for _, v := range l.adapters {
+			io.Copy(v, buf)
 		}
 		bufferPoolPut(buf)
 	}
@@ -226,7 +226,9 @@ func (l *gollog) SetOption(option LogOption) {
 
 // AddLogAdapter add a log adapter which implement the adapter.Adapter interface with give name key, return error if name already exists
 func (l *gollog) AddLogAdapter(name string, adp adapter.Adapter) error {
-
+	if adp == nil {
+		return errors.New("nil adapter")
+	}
 	if _, ok := l.adapters[name]; ok {
 
 		return errors.New("Adapter already exists")
