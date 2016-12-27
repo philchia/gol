@@ -164,7 +164,7 @@ gol include a benchmark against the builtin log package, run `$go test ./... -be
 - [ ] Mail adapter
 - [ ] Slack adapter
 - [ ] Elastic Search adapter for ELK stack
-- [ ] 100% coverage [![Coverage Status](https://coveralls.io/repos/github/philchia/gol/badge.svg?branch=master)](https://coveralls.io/github/philchia/gol?branch=master)
+- [ ] 100% coverage
 
 ## License
 
