@@ -71,6 +71,16 @@ gol.Criticalf("Hello from %s", runtime.GOOS)
 
 ```
 
+### Not log to console
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+gol.RemoveAdapter(gol.CONSOLELOGGER)
+```
+
 ### Log to file
 
 ```go
@@ -81,6 +91,21 @@ import (
 
 defer gol.Flush()
 gol.AddLogAdapter("file", file.NewAdapter("/var/log/tmp.log"))
+gol.Debug("Hello, gol!!!")
+gol.Criticalf("Hello from %s", runtime.GOOS)
+
+```
+
+### Rotate log to file
+
+```go
+import (
+    "github.com/philchia/gol"
+    "runtime"
+)
+
+defer gol.Flush()
+gol.AddLogAdapter("rotate file", rotatefile.NewAdapter("./temp.log", 6, rotatefile.KB*1))
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 
