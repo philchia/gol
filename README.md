@@ -34,7 +34,7 @@ gol has several built in adapters
 - File adapter support write log to file
 - File rotate adapter support write log to rotate files
 - Smtp adapter support write log to email
-- Slack adapter support write log to given slack channel (**under development**)
+- Slack adapter support write log to given slack channel
 - ES adapter support write log to elastic search (**under development**)
 
 ### Customize backend adapters
@@ -186,8 +186,8 @@ gol include a benchmark against the builtin log package, run `$go test ./... -be
 - [X] Toggle console adapter
 - [X] Logrotate
 - [X] Mail adapter
+- [X] Slack adapter
 - [ ] Level support for single adapter
-- [ ] Slack adapter
 - [ ] Elastic Search adapter for ELK stack
 - [ ] 100% coverage
 
