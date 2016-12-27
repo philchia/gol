@@ -34,14 +34,15 @@ const (
 var _ adapter.Adapter = (*rotatefileAdapter)(nil)
 
 type rotatefileAdapter struct {
-	maxFileNum         int
+	maxFileBackups     int
 	maxByteSizePerFile ByteSize
+	size               ByteSize
 	fileName           string
 	io.WriteCloser
 }
 
 // NewAdapter create a new rotate file adapter
-func NewAdapter(name string, maxFileNum int, maxBytesPerFile ByteSize) adapter.Adapter {
+func NewAdapter(name string, maxFileBackups int, maxBytesPerFile ByteSize) adapter.Adapter {
 	path, err := filepath.Abs(name)
 	if err != nil {
 		return nil
@@ -50,12 +51,24 @@ func NewAdapter(name string, maxFileNum int, maxBytesPerFile ByteSize) adapter.A
 	if err != nil {
 		return nil
 	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil
+	}
 
 	adapter := &rotatefileAdapter{
-		maxFileNum:         maxFileNum,
+		maxFileBackups:     maxFileBackups,
 		maxByteSizePerFile: maxBytesPerFile,
 		fileName:           name,
 		WriteCloser:        file,
+		size:               ByteSize(info.Size()),
 	}
 	return adapter
+}
+
+// Write implement Writer
+func (r *rotatefileAdapter) Write(b []byte) (n int, err error) {
+	n, err = r.WriteCloser.Write(b)
+	r.size += ByteSize(n)
+	return
 }
