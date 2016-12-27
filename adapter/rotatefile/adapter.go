@@ -9,7 +9,7 @@ import (
 )
 
 // ByteSize represent file size in byte
-type ByteSize float64
+type ByteSize int64
 
 const (
 	_ ByteSize = 1 << (iota * 10)
@@ -25,10 +25,6 @@ const (
 	PB
 	// EB = 1 eb bytes
 	EB
-	// ZB = 1 zb bytes
-	ZB
-	// YB = 1 yb bytes
-	YB
 )
 
 var _ adapter.Adapter = (*rotatefileAdapter)(nil)
