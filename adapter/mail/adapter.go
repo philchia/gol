@@ -9,6 +9,8 @@ import (
 	"github.com/philchia/gol/adapter"
 )
 
+var _ adapter.Adapter = (*mailAdapter)(nil)
+
 type mailAdapter struct {
 	host      string
 	account   string
