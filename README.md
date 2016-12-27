@@ -33,7 +33,7 @@ gol has several built in adapters
 - Console adapter support write log to stderr, and this is the default adapter
 - File adapter support write log to file
 - File rotate adapter support write log to rotate files
-- Stmp adapter support write log to email (**under development**)
+- Smtp adapter support write log to email (**under development**)
 - Slack adapter support write log to given slack channel (**under development**)
 - ES adapter support write log to elastic search (**under development**)
 
