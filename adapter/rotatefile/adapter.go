@@ -3,6 +3,7 @@ package rotatefile
 import (
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/philchia/gol/adapter"
 )
@@ -41,7 +42,11 @@ type rotatefileAdapter struct {
 
 // NewAdapter create a new rotate file adapter
 func NewAdapter(name string, maxFileNum int, maxBytesPerFile ByteSize) adapter.Adapter {
-	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	path, err := filepath.Abs(name)
+	if err != nil {
+		return nil
+	}
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil
 	}

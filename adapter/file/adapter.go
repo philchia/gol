@@ -5,6 +5,8 @@ import (
 
 	"io"
 
+	"path/filepath"
+
 	"github.com/philchia/gol/adapter"
 )
 
@@ -16,7 +18,11 @@ type fileAdapter struct {
 
 // NewAdapter create a file adapter with given file name, will automatically create a file if not exists
 func NewAdapter(name string) adapter.Adapter {
-	file, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	path, err := filepath.Abs(name)
+	if err != nil {
+		return nil
+	}
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return nil
 	}

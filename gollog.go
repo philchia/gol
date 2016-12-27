@@ -114,7 +114,6 @@ func (l *gollog) generatePrefix(buf *bytes.Buffer, callDepth int) {
 		itoa(buf, line, -1)
 		buf.WriteString(": ")
 	}
-
 }
 
 func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, msg string) {
