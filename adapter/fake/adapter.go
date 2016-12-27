@@ -1,6 +1,12 @@
 package fake
 
-import "time"
+import (
+	"time"
+
+	"github.com/philchia/gol/adapter"
+)
+
+var _ adapter.Adapter = (*Writer)(nil)
 
 // Writer is a fake adapter
 // Use for test purpose

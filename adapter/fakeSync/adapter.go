@@ -1,5 +1,11 @@
 package fakeSync
 
+import (
+	"github.com/philchia/gol/adapter"
+)
+
+var _ adapter.Adapter = (*ReadWriter)(nil)
+
 // ReadWriter is a fake adapter with sync read method
 // Use for test purpose
 type ReadWriter struct {
