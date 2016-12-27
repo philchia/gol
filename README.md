@@ -159,8 +159,8 @@ gol include a benchmark against the builtin log package, run `$go test ./... -be
 - [X] Colorful output
 - [X] Flush buffered log
 - [X] Toggle console adapter
+- [X] Logrotate
 - [ ] Level support for single adapter
-- [ ] Logrotate
 - [ ] Mail adapter
 - [ ] Slack adapter
 - [ ] Elastic Search adapter for ELK stack
