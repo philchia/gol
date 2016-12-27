@@ -1,6 +1,8 @@
 package gol
 
 import (
+	"bytes"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -465,6 +467,114 @@ func Test_gollog_Flush(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_logger.Flush()
+		})
+	}
+}
+
+func Test_itoa(t *testing.T) {
+	type args struct {
+		buf *bytes.Buffer
+		i   int
+		wid int
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			"case0",
+			args{
+				bytes.NewBuffer(nil),
+				5,
+				1,
+			},
+		},
+		{
+			"case1",
+			args{
+				bytes.NewBuffer(nil),
+				15,
+				2,
+			},
+		},
+		{
+			"case2",
+			args{
+				bytes.NewBuffer(nil),
+				155,
+				3,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			itoa(tt.args.buf, tt.args.i, tt.args.wid)
+			if got := tt.args.buf.String(); got != fmt.Sprintf("%d", tt.args.i) {
+				t.Errorf("itoa() got %s, want %s", got, fmt.Sprintf("%d", tt.args.i))
+			}
+		})
+	}
+}
+
+func Test_gollog_generatePrefix(t *testing.T) {
+	type fields struct {
+		level    LogLevel
+		option   LogOption
+		adapters map[string]adapter.Adapter
+		logChan  chan *bytes.Buffer
+		doneChan chan struct{}
+	}
+	type args struct {
+		buf       *bytes.Buffer
+		callDepth int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			"case1",
+			fields{
+				DEBUG,
+				LstdFlags | Lmicroseconds | LUTC,
+				map[string]adapter.Adapter{},
+				make(chan *bytes.Buffer, 10),
+				make(chan struct{}),
+			},
+			args{
+				bytes.NewBuffer(nil),
+				2,
+			},
+		},
+		{
+			"case2",
+			fields{
+				WARN,
+				LstdFlags | Lmicroseconds | LUTC,
+				map[string]adapter.Adapter{},
+				make(chan *bytes.Buffer, 10),
+				make(chan struct{}),
+			},
+			args{
+				bytes.NewBuffer(nil),
+				20,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &gollog{
+				level:    tt.fields.level,
+				option:   tt.fields.option,
+				adapters: tt.fields.adapters,
+				logChan:  tt.fields.logChan,
+				doneChan: tt.fields.doneChan,
+			}
+			l.generatePrefix(tt.args.buf, tt.args.callDepth)
+			if got := tt.args.buf.String(); got == "" {
+				t.Error(`generatePrefix() got = "",want not nil`)
+			}
 		})
 	}
 }
