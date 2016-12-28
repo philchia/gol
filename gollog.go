@@ -39,10 +39,7 @@ func (l *gollog) put(buf *bytes.Buffer) {
 }
 
 func (l *gollog) output(callDepth int, level LogLevel, msg string) {
-	buf := bufferPoolGet()
-	l.generateLog(buf, callDepth, level, msg)
-
-	l.put(buf)
+	l.put(l.generateLog(callDepth, level, msg))
 }
 
 // Debug will prinnt log as DEBUG level

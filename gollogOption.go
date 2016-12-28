@@ -97,7 +97,8 @@ func getCaller(depth int) (file string, line int) {
 	return
 }
 
-func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, msg string) {
+func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) *bytes.Buffer {
+	buf := bufferPoolGet()
 	l.generatePrefix(buf, callDepth)
 
 	buf.Write(level.ColorString())
@@ -106,4 +107,5 @@ func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, m
 	buf.WriteByte(' ')
 	buf.WriteString(msg)
 	buf.WriteByte('\n')
+	return buf
 }
