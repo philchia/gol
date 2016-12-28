@@ -50,19 +50,19 @@ func writeDateTimeHeader(buf *bytes.Buffer, option LogOption) {
 			itoa(buf, day, 2)
 			buf.WriteByte(' ')
 		}
-		if option&(Ltime|Lmicroseconds) != 0 {
+		if option&(Ltime) != 0 {
 			hour, min, sec := t.Clock()
 			itoa(buf, hour, 2)
 			buf.WriteByte(':')
 			itoa(buf, min, 2)
 			buf.WriteByte(':')
 			itoa(buf, sec, 2)
-			if option&Lmicroseconds != 0 {
-				buf.WriteByte('.')
-				itoa(buf, t.Nanosecond()/1e3, 6)
-			}
-			buf.WriteByte(' ')
 		}
+		if option&Lmicroseconds != 0 {
+			buf.WriteByte('.')
+			itoa(buf, t.Nanosecond()/1e3, 6)
+		}
+		buf.WriteByte(' ')
 	}
 }
 
