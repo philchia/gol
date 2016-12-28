@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"runtime"
 	"time"
+
+	"github.com/philchia/gol/internal"
 )
 
 // SetOption set the shared logger's log options used to format log headerr
@@ -101,11 +103,8 @@ func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) *bytes.B
 	buf := bufferPoolGet()
 	l.generatePrefix(buf, callDepth)
 
-	buf.Write(level.ColorString())
-	buf.Write(level.String())
-	buf.Write(ALL.ColorString())
-	buf.WriteByte(' ')
-	buf.WriteString(msg)
-	buf.WriteByte('\n')
+	buf.Write(level.Bytes())
+	buf.WriteString(internal.JoinStrings(" ", msg, "\n"))
+
 	return buf
 }

@@ -22,36 +22,19 @@ const (
 	CRITICAL
 )
 
-var colorMap = map[LogLevel][]byte{
-	ALL:      []byte("\033[0m"),
-	DEBUG:    []byte("\033[32m"),
-	INFO:     []byte("\033[34m"),
-	WARN:     []byte("\033[33m"),
-	ERROR:    []byte("\033[31m"),
-	CRITICAL: []byte("\033[35m"),
-}
-
 var levelMap = map[LogLevel][]byte{
-	ALL:      []byte("[ALL]"),
-	DEBUG:    []byte("[DEBUG]"),
-	INFO:     []byte("[INFO]"),
-	WARN:     []byte("[WARN]"),
-	ERROR:    []byte("[ERROR]"),
-	CRITICAL: []byte("[CRITICAL]"),
+	ALL:      []byte("\033[0m[ALL]"),
+	DEBUG:    []byte("\033[32m[DEBUG]\033[0m"),
+	INFO:     []byte("\033[34m[INFO]\033[0m"),
+	WARN:     []byte("\033[33m[WARN]\033[0m"),
+	ERROR:    []byte("\033[31m[ERROR]\033[0m"),
+	CRITICAL: []byte("\033[35m[CRITICAL]\033[0m"),
 }
 
-// ColorString return the ascii color code represent the given log level
-func (level LogLevel) ColorString() []byte {
-	if ret, ok := colorMap[level]; ok {
-		return ret
-	}
-	return colorMap[ALL]
-}
-
-// String return the level string
-func (level LogLevel) String() []byte {
+// Bytes return the level string
+func (level LogLevel) Bytes() []byte {
 	if ret, ok := levelMap[level]; ok {
 		return ret
 	}
-	return internal.Str2bytes("[UNKNOWN LOG LEVEL]")
+	return internal.Str2bytes("\033[0m[UNKNOWN LOG LEVEL]")
 }
