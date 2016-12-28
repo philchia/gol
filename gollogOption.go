@@ -42,7 +42,6 @@ func writeDateTimeHeader(buf *bytes.Buffer, option LogOption) {
 		if option&LUTC != 0 {
 			t = t.UTC()
 		}
-
 		if option&Ldate != 0 {
 			year, month, day := t.Date()
 			itoa(buf, year, 4)
