@@ -20,15 +20,13 @@ type mailAdapter struct {
 }
 
 func (m *mailAdapter) Write(b []byte) (int, error) {
-	// do not block the write
-	go func() {
-		hp := strings.Split(m.host, ":")
-		auth := smtp.PlainAuth("", m.account, m.password, hp[0])
-		err := smtp.SendMail(m.host, auth, m.account, m.receivers, b)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}()
+
+	hp := strings.Split(m.host, ":")
+	auth := smtp.PlainAuth("", m.account, m.password, hp[0])
+	err := smtp.SendMail(m.host, auth, m.account, m.receivers, b)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return len(b), nil
 }
 

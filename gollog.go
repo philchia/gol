@@ -61,45 +61,34 @@ func itoa(buf *bytes.Buffer, i int, wid int) {
 
 func (l *gollog) generatePrefix(buf *bytes.Buffer, callDepth int) {
 
-	if l.option&(Ldate|Ltime|Lmicroseconds) != 0 {
+	writeDateTimeHeader(buf, l.option)
+	writeFineLineHeader(buf, l.option, callDepth+1)
+}
+
+func writeDateTimeHeader(buf *bytes.Buffer, option LogOption) {
+	if option&(Ldate|Ltime|Lmicroseconds) != 0 {
 		var t = time.Now()
-		if l.option&LUTC != 0 {
+		if option&LUTC != 0 {
 			t = t.UTC()
 		}
-		if l.option&Ldate != 0 {
-			year, month, day := t.Date()
-			itoa(buf, year, 4)
-			buf.WriteByte('/')
-			itoa(buf, int(month), 2)
-			buf.WriteByte('/')
-			itoa(buf, day, 2)
-			buf.WriteByte(' ')
+
+		if option&Ldate != 0 {
+			writeDateHeader(buf, t)
 		}
-		if l.option&(Ltime|Lmicroseconds) != 0 {
-			hour, min, sec := t.Clock()
-			itoa(buf, hour, 2)
-			buf.WriteByte(':')
-			itoa(buf, min, 2)
-			buf.WriteByte(':')
-			itoa(buf, sec, 2)
-			if l.option&Lmicroseconds != 0 {
-				buf.WriteByte('.')
-				itoa(buf, t.Nanosecond()/1e3, 6)
+		if option&(Ltime|Lmicroseconds) != 0 {
+			writeTimeHeader(buf, t)
+			if option&Lmicroseconds != 0 {
+				writeMicroSecondHeader(buf, t)
 			}
 			buf.WriteByte(' ')
 		}
 	}
+}
 
-	if l.option&(Lshortfile|Llongfile) != 0 {
-		var file string
-		var line int
-		var ok bool
-		_, file, line, ok = runtime.Caller(callDepth)
-		if !ok {
-			file = "???"
-			line = 0
-		}
-		if l.option&Lshortfile != 0 {
+func writeFineLineHeader(buf *bytes.Buffer, option LogOption, callDepth int) {
+	if option&(Lshortfile|Llongfile) != 0 {
+		file, line := getCaller(callDepth + 1)
+		if option&Lshortfile != 0 {
 			short := file
 			for i := len(file) - 1; i > 0; i-- {
 				if file[i] == '/' {
@@ -109,11 +98,50 @@ func (l *gollog) generatePrefix(buf *bytes.Buffer, callDepth int) {
 			}
 			file = short
 		}
-		buf.WriteString(file)
-		buf.WriteByte(':')
-		itoa(buf, line, -1)
-		buf.WriteString(": ")
+		writeCallerHerder(buf, file, line)
 	}
+}
+
+func writeDateHeader(buf *bytes.Buffer, t time.Time) {
+	year, month, day := t.Date()
+	itoa(buf, year, 4)
+	buf.WriteByte('/')
+	itoa(buf, int(month), 2)
+	buf.WriteByte('/')
+	itoa(buf, day, 2)
+	buf.WriteByte(' ')
+}
+
+func writeTimeHeader(buf *bytes.Buffer, t time.Time) {
+	hour, min, sec := t.Clock()
+	itoa(buf, hour, 2)
+	buf.WriteByte(':')
+	itoa(buf, min, 2)
+	buf.WriteByte(':')
+	itoa(buf, sec, 2)
+}
+
+func writeMicroSecondHeader(buf *bytes.Buffer, t time.Time) {
+	buf.WriteByte('.')
+	itoa(buf, t.Nanosecond()/1e3, 6)
+}
+
+func writeCallerHerder(buf *bytes.Buffer, file string, line int) {
+	buf.WriteString(file)
+	buf.WriteByte(':')
+	itoa(buf, line, -1)
+	buf.WriteString(": ")
+}
+
+func getCaller(depth int) (file string, line int) {
+
+	var ok bool
+	_, file, line, ok = runtime.Caller(depth)
+	if !ok {
+		file = "???"
+		line = 0
+	}
+	return
 }
 
 func (l *gollog) generateLog(buf *bytes.Buffer, callDepth int, level LogLevel, msg string) {
