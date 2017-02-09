@@ -188,9 +188,10 @@ gol include a benchmark against the builtin log package, run `$go test ./... -be
 - [X] Logrotate
 - [X] Mail adapter
 - [X] Slack adapter
-- [ ] Level support for single adapter
+- [X] Level support for single adapter
 - [ ] Elastic Search adapter for ELK stack
 - [ ] 100% coverage
+- [ ] Customizable msg buffer size
 
 ## License
 
