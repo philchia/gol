@@ -8,9 +8,10 @@ import (
 
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/adapter/fakeSync"
+	"github.com/philchia/gol/level"
 )
 
-var _logger = NewLogger(DEBUG)
+var _logger = NewLogger(level.DEBUG)
 var _loggerAdapter = fakeSync.NewAdapter()
 
 func init() {
@@ -302,33 +303,33 @@ func Test_gollog_Criticalf(t *testing.T) {
 
 func Test_gollog_SetLevel(t *testing.T) {
 	type args struct {
-		level LogLevel
+		level level.LogLevel
 	}
 	tests := []struct {
 		name string
 		args args
-		want LogLevel
+		want level.LogLevel
 	}{
 		{
 			"case1",
 			args{
-				DEBUG,
+				level.DEBUG,
 			},
-			DEBUG,
+			level.DEBUG,
 		},
 		{
 			"case2",
 			args{
-				WARN,
+				level.WARN,
 			},
-			WARN,
+			level.WARN,
 		},
 		{
 			"case2",
 			args{
-				ERROR,
+				level.ERROR,
 			},
-			ERROR,
+			level.ERROR,
 		},
 	}
 
@@ -518,10 +519,9 @@ func Test_itoa(t *testing.T) {
 
 func Test_gollog_generatePrefix(t *testing.T) {
 	type fields struct {
-		level    LogLevel
+		level    level.LogLevel
 		option   LogOption
 		adapters map[string]adapter.Adapter
-		logChan  chan *bytes.Buffer
 		doneChan chan struct{}
 	}
 	type args struct {
@@ -536,10 +536,9 @@ func Test_gollog_generatePrefix(t *testing.T) {
 		{
 			"case1",
 			fields{
-				DEBUG,
+				level.DEBUG,
 				LstdFlags | Lmicroseconds | LUTC,
 				map[string]adapter.Adapter{},
-				make(chan *bytes.Buffer, 10),
 				make(chan struct{}),
 			},
 			args{
@@ -550,10 +549,9 @@ func Test_gollog_generatePrefix(t *testing.T) {
 		{
 			"case2",
 			fields{
-				WARN,
+				level.WARN,
 				LstdFlags | Lmicroseconds | LUTC,
 				map[string]adapter.Adapter{},
-				make(chan *bytes.Buffer, 10),
 				make(chan struct{}),
 			},
 			args{
@@ -568,7 +566,6 @@ func Test_gollog_generatePrefix(t *testing.T) {
 				level:    tt.fields.level,
 				option:   tt.fields.option,
 				adapters: tt.fields.adapters,
-				logChan:  tt.fields.logChan,
 				doneChan: tt.fields.doneChan,
 			}
 			l.generatePrefix(tt.args.buf, tt.args.callDepth)

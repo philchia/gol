@@ -8,118 +8,125 @@ import (
 	"io"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/level"
 )
 
 // This works as a compiler check
 var _ Logger = (*gollog)(nil)
 
 type gollog struct {
-	level    LogLevel
+	level    level.LogLevel
 	option   LogOption
 	adapters map[string]adapter.Adapter
-	logChan  chan *bytes.Buffer
+	logChan  chan *logMSG
 	doneChan chan struct{}
 	// mutex    sync.RWMutex
 }
 
 func (l *gollog) msgPump() {
 
-	for buf := range l.logChan {
+	for msg := range l.logChan {
+		buf := bytes.NewBufferString(msg.msg)
 		for _, v := range l.adapters {
-			io.Copy(v, buf)
+			if v.Level() <= msg.logLevel {
+				io.Copy(v, buf)
+			}
 		}
-		bufferPoolPut(buf)
+		msgPoolPut(msg)
 	}
 
 	close(l.doneChan)
 }
 
-func (l *gollog) put(buf *bytes.Buffer) {
-	l.logChan <- buf
+func (l *gollog) put(msg *logMSG) {
+	l.logChan <- msg
 }
 
-func (l *gollog) output(callDepth int, level LogLevel, msg string) {
-	l.put(l.generateLog(callDepth, level, msg))
+func (l *gollog) output(callDepth int, level level.LogLevel, msg string) {
+	logmsg := msgPoolGet()
+	logmsg.logLevel = level
+	logmsg.msg = l.generateLog(callDepth, level, msg).String()
+	l.put(logmsg)
 }
 
 // Debug will prinnt log as DEBUG level
 func (l *gollog) Debug(i ...interface{}) {
-	if l.level > DEBUG {
+	if l.level > level.DEBUG {
 		return
 	}
-	l.output(2, DEBUG, fmt.Sprint(i...))
+	l.output(2, level.DEBUG, fmt.Sprint(i...))
 }
 
 // Debugf will prinnt log as DEBUG level
 func (l *gollog) Debugf(format string, i ...interface{}) {
-	if l.level > DEBUG {
+	if l.level > level.DEBUG {
 		return
 	}
-	l.output(2, DEBUG, fmt.Sprintf(format, i...))
+	l.output(2, level.DEBUG, fmt.Sprintf(format, i...))
 }
 
 // Info will prinnt log as INFO level
 func (l *gollog) Info(i ...interface{}) {
-	if l.level > INFO {
+	if l.level > level.INFO {
 		return
 	}
-	l.output(2, INFO, fmt.Sprint(i...))
+	l.output(2, level.INFO, fmt.Sprint(i...))
 }
 
 // Infof will prinnt log as INFO level
 func (l *gollog) Infof(format string, i ...interface{}) {
-	if l.level > INFO {
+	if l.level > level.INFO {
 		return
 	}
-	l.output(2, INFO, fmt.Sprintf(format, i...))
+	l.output(2, level.INFO, fmt.Sprintf(format, i...))
 }
 
 // Warn will prinnt log as WARN level
 func (l *gollog) Warn(i ...interface{}) {
-	if l.level > WARN {
+	if l.level > level.WARN {
 		return
 	}
-	l.output(2, WARN, fmt.Sprint(i...))
+	l.output(2, level.WARN, fmt.Sprint(i...))
 }
 
 // Warnf will prinnt log as WARN level
 func (l *gollog) Warnf(format string, i ...interface{}) {
-	if l.level > WARN {
+	if l.level > level.WARN {
 		return
 	}
-	l.output(2, WARN, fmt.Sprintf(format, i...))
+	l.output(2, level.WARN, fmt.Sprintf(format, i...))
 }
 
 // Error will prinnt log as ERROR level
 func (l *gollog) Error(i ...interface{}) {
-	if l.level > ERROR {
+	if l.level > level.ERROR {
 		return
 	}
-	l.output(2, ERROR, fmt.Sprint(i...))
+	l.output(2, level.ERROR, fmt.Sprint(i...))
 }
 
 // Errorf will prinnt log as ERROR level
 func (l *gollog) Errorf(format string, i ...interface{}) {
-	if l.level > ERROR {
+	if l.level > level.ERROR {
 		return
 	}
-	l.output(2, ERROR, fmt.Sprintf(format, i...))
+	l.output(2, level.ERROR, fmt.Sprintf(format, i...))
 }
 
 // Critical will prinnt log as CRITICAL level
 func (l *gollog) Critical(i ...interface{}) {
-	if l.level > CRITICAL {
+	if l.level > level.CRITICAL {
 		return
 	}
-	l.output(2, CRITICAL, fmt.Sprint(i...))
+	l.output(2, level.CRITICAL, fmt.Sprint(i...))
 }
 
 // Criticalf will prinnt log as CRITICAL level
 func (l *gollog) Criticalf(format string, i ...interface{}) {
-	if l.level > CRITICAL {
+	if l.level > level.CRITICAL {
 		return
 	}
-	l.output(2, CRITICAL, fmt.Sprintf(format, i...))
+	l.output(2, level.CRITICAL, fmt.Sprintf(format, i...))
 }
 
 // Flush flush all buffered log and call Close() on all adapters

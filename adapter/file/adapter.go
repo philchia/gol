@@ -8,16 +8,18 @@ import (
 	"path/filepath"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/level"
 )
 
 var _ adapter.Adapter = (*fileAdapter)(nil)
 
 type fileAdapter struct {
 	io.WriteCloser
+	logLevel level.LogLevel
 }
 
 // NewAdapter create a file adapter with given file name, will automatically create a file if not exists
-func NewAdapter(name string) adapter.Adapter {
+func NewAdapter(name string, l ...level.LogLevel) adapter.Adapter {
 	path, err := filepath.Abs(name)
 	if err != nil {
 		return nil
@@ -28,7 +30,14 @@ func NewAdapter(name string) adapter.Adapter {
 	}
 
 	adapter := &fileAdapter{
-		file,
+		WriteCloser: file,
+	}
+	if len(l) > 0 {
+		adapter.logLevel = l[0]
 	}
 	return adapter
+}
+
+func (f *fileAdapter) Level() level.LogLevel {
+	return f.logLevel
 }

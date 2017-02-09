@@ -1,4 +1,4 @@
-package gol
+package level
 
 import (
 	"github.com/philchia/gol/internal"

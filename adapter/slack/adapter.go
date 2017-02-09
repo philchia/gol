@@ -7,19 +7,25 @@ import (
 
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/internal"
+	"github.com/philchia/gol/level"
 )
 
 var _ adapter.Adapter = (*slackWriter)(nil)
 
 type slackWriter struct {
 	webhookURL string
+	logLevel   level.LogLevel
 }
 
 // NewAdapter create a slack adapter
-func NewAdapter(webhook string) adapter.Adapter {
-	return &slackWriter{
+func NewAdapter(webhook string, l ...level.LogLevel) adapter.Adapter {
+	s := &slackWriter{
 		webhookURL: webhook,
 	}
+	if len(l) > 0 {
+		s.logLevel = l[0]
+	}
+	return s
 }
 
 func (s *slackWriter) Write(b []byte) (int, error) {
@@ -40,4 +46,8 @@ func (s *slackWriter) Write(b []byte) (int, error) {
 
 func (s *slackWriter) Close() error {
 	return nil
+}
+
+func (s *slackWriter) Level() level.LogLevel {
+	return s.logLevel
 }

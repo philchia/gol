@@ -1,11 +1,12 @@
 package gol
 
 import "github.com/philchia/gol/adapter"
+import "github.com/philchia/gol/level"
 
 var logger Logger
 
 func init() {
-	logger = NewLogger(ALL)
+	logger = NewLogger(level.ALL)
 }
 
 // Debug will prinnt log as DEBUG level
@@ -59,7 +60,7 @@ func Criticalf(format string, i ...interface{}) {
 }
 
 // SetLevel set the shared logger's log level
-func SetLevel(level LogLevel) {
+func SetLevel(level level.LogLevel) {
 	logger.SetLevel(level)
 }
 

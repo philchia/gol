@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/philchia/gol/internal"
+	"github.com/philchia/gol/level"
 )
 
 // SetOption set the shared logger's log options used to format log headerr
@@ -98,7 +99,7 @@ func getCaller(depth int) (file string, line int) {
 	return
 }
 
-func (l *gollog) generateLog(callDepth int, level LogLevel, msg string) *bytes.Buffer {
+func (l *gollog) generateLog(callDepth int, level level.LogLevel, msg string) *bytes.Buffer {
 	buf := bufferPoolGet()
 	l.generatePrefix(buf, callDepth)
 

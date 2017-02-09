@@ -11,6 +11,7 @@ import (
 
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/internal"
+	"github.com/philchia/gol/level"
 )
 
 // ByteSize represent file size in byte
@@ -40,21 +41,7 @@ type rotatefileAdapter struct {
 	size               ByteSize
 	fileName           string
 	io.WriteCloser
-}
-
-// NewAdapter create a new rotate file adapter
-func NewAdapter(name string, maxFileBackups int, maxBytesPerFile ByteSize) adapter.Adapter {
-	adapter := &rotatefileAdapter{
-		maxFileBackups:     maxFileBackups,
-		maxByteSizePerFile: maxBytesPerFile,
-		fileName:           name,
-		size:               0,
-	}
-	if err := adapter.rotate(); err != nil {
-		log.Println(err)
-		return nil
-	}
-	return adapter
+	logLevel level.LogLevel
 }
 
 // Write implement Writer
@@ -126,4 +113,27 @@ func (r *rotatefileAdapter) rotate() error {
 	r.size = 0
 	return nil
 
+}
+
+// NewAdapter create a new rotate file adapter
+func NewAdapter(name string, maxFileBackups int, maxBytesPerFile ByteSize, l ...level.LogLevel) adapter.Adapter {
+	adapter := &rotatefileAdapter{
+		maxFileBackups:     maxFileBackups,
+		maxByteSizePerFile: maxBytesPerFile,
+		fileName:           name,
+		size:               0,
+	}
+	if len(l) > 0 {
+		adapter.logLevel = l[0]
+	}
+	if err := adapter.rotate(); err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return adapter
+}
+
+func (r *rotatefileAdapter) Level() level.LogLevel {
+	return r.logLevel
 }

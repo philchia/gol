@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/level"
 )
 
 var _ adapter.Adapter = (*mailAdapter)(nil)
@@ -17,6 +18,7 @@ type mailAdapter struct {
 	password  string
 	subject   string
 	receivers []string
+	logLevel  level.LogLevel
 }
 
 func (m *mailAdapter) Write(b []byte) (int, error) {
@@ -35,7 +37,7 @@ func (m *mailAdapter) Close() error {
 }
 
 // NewAdapter create a mail adapter
-func NewAdapter(host, account, password, subject string, receivers ...string) adapter.Adapter {
+func NewAdapter(host, account, password, subject string, receivers []string, l ...level.LogLevel) adapter.Adapter {
 	adapter := &mailAdapter{
 		host:      host,
 		account:   account,
@@ -43,5 +45,12 @@ func NewAdapter(host, account, password, subject string, receivers ...string) ad
 		subject:   subject,
 		receivers: receivers,
 	}
+	if len(l) > 0 {
+		adapter.logLevel = l[0]
+	}
 	return adapter
+}
+
+func (m *mailAdapter) Level() level.LogLevel {
+	return m.logLevel
 }

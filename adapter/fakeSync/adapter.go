@@ -2,6 +2,7 @@ package fakeSync
 
 import (
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/level"
 )
 
 var _ adapter.Adapter = (*ReadWriter)(nil)
@@ -9,9 +10,10 @@ var _ adapter.Adapter = (*ReadWriter)(nil)
 // ReadWriter is a fake adapter with sync read method
 // Use for test purpose
 type ReadWriter struct {
-	withErr error
-	done    chan struct{}
-	b       []byte
+	withErr  error
+	done     chan struct{}
+	b        []byte
+	logLevel level.LogLevel
 }
 
 // Write append bytes to b
@@ -39,8 +41,16 @@ func (w *ReadWriter) Read() []byte {
 }
 
 // NewAdapter create a fake adapter with sync read method
-func NewAdapter() *ReadWriter {
-	return &ReadWriter{
+func NewAdapter(l ...level.LogLevel) *ReadWriter {
+	w := &ReadWriter{
 		done: make(chan struct{}, 100),
 	}
+	if len(l) > 0 {
+		w.logLevel = l[0]
+	}
+	return w
+}
+
+func (w *ReadWriter) Level() level.LogLevel {
+	return w.logLevel
 }

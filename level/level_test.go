@@ -1,8 +1,6 @@
-package gol
+package level
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestLogLevel_Bytes(t *testing.T) {
 	tests := []struct {

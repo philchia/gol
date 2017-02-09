@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/level"
 )
 
 var _ adapter.Adapter = (*Writer)(nil)
@@ -11,8 +12,9 @@ var _ adapter.Adapter = (*Writer)(nil)
 // Writer is a fake adapter
 // Use for test purpose
 type Writer struct {
-	withErr error
-	b       []byte
+	withErr  error
+	b        []byte
+	logLevel level.LogLevel
 }
 
 // Write append bytes to b
@@ -35,6 +37,14 @@ func (w *Writer) Close() error {
 }
 
 // NewAdapter create a fake adapter
-func NewAdapter() *Writer {
-	return new(Writer)
+func NewAdapter(l ...level.LogLevel) *Writer {
+	w := new(Writer)
+	if len(l) > 0 {
+		w.logLevel = l[0]
+	}
+	return w
+}
+
+func (w *Writer) Level() level.LogLevel {
+	return w.logLevel
 }

@@ -1,13 +1,14 @@
 package gol
 
 import (
-	"bytes"
 	"testing"
+
+	"github.com/philchia/gol/level"
 )
 
 func TestNewLogger(t *testing.T) {
 	type args struct {
-		level LogLevel
+		level level.LogLevel
 	}
 	tests := []struct {
 		name string
@@ -17,12 +18,11 @@ func TestNewLogger(t *testing.T) {
 		{
 			"case1",
 			args{
-				DEBUG,
+				level.DEBUG,
 			},
 			&gollog{
-				level:   DEBUG,
-				option:  LstdFlags,
-				logChan: make(chan *bytes.Buffer, 1024),
+				level:  level.DEBUG,
+				option: LstdFlags,
 			},
 		},
 	}

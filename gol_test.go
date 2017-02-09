@@ -5,6 +5,7 @@ import (
 
 	"github.com/philchia/gol/adapter"
 	"github.com/philchia/gol/adapter/fakeSync"
+	"github.com/philchia/gol/level"
 
 	"log"
 	"reflect"
@@ -300,33 +301,33 @@ func TestCriticalf(t *testing.T) {
 
 func TestSetLevel(t *testing.T) {
 	type args struct {
-		level LogLevel
+		level level.LogLevel
 	}
 	tests := []struct {
 		name string
 		args args
-		want LogLevel
+		want level.LogLevel
 	}{
 		{
 			"case1",
 			args{
-				DEBUG,
+				level.DEBUG,
 			},
-			DEBUG,
+			level.DEBUG,
 		},
 		{
 			"case2",
 			args{
-				WARN,
+				level.WARN,
 			},
-			WARN,
+			level.WARN,
 		},
 		{
 			"case2",
 			args{
-				ERROR,
+				level.ERROR,
 			},
-			ERROR,
+			level.ERROR,
 		},
 	}
 
@@ -479,7 +480,7 @@ func BenchmarkLog(b *testing.B) {
 }
 
 func BenchmarkGol(b *testing.B) {
-	g := NewLogger(DEBUG)
+	g := NewLogger(level.DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
 	// g.SetOption(0)
 	g.AddLogAdapter("fake", fakeSync.NewAdapter())
@@ -501,7 +502,7 @@ func BenchmarkMultiThreadLog(b *testing.B) {
 }
 
 func BenchmarkMultiThreadGol(b *testing.B) {
-	g := NewLogger(DEBUG)
+	g := NewLogger(level.DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
 	g.AddLogAdapter("fake", fakeSync.NewAdapter())
 	b.ResetTimer()
