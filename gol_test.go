@@ -476,7 +476,9 @@ func BenchmarkLog(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		l.Println("Hello")
+		for j := 0; j < 100; j++ {
+			l.Println("Hello")
+		}
 	}
 }
 
@@ -487,29 +489,8 @@ func BenchmarkGol(b *testing.B) {
 	g.AddLogAdapter("fake", fake.NewAdapter(level.DEBUG))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		g.Debug("Hello")
-	}
-}
-
-func BenchmarkMultiThreadLog(b *testing.B) {
-	l := log.New(fakeSync.NewAdapter(), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
 		for j := 0; j < 100; j++ {
-			go l.Println("Hello")
-		}
-	}
-}
-
-func BenchmarkMultiThreadGol(b *testing.B) {
-	g := NewLogger(level.DEBUG)
-	g.RemoveAdapter(CONSOLELOGGER)
-	g.AddLogAdapter("fake", fakeSync.NewAdapter(level.DEBUG))
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for j := 0; j < 100; j++ {
-			go g.Debug("Hello")
+			g.Debug("Hello")
 		}
 	}
 }

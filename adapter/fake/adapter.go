@@ -22,7 +22,7 @@ func (w *Writer) Write(b []byte) (int, error) {
 	if w.withErr != nil {
 		return 0, w.withErr
 	}
-	time.Sleep(time.Nanosecond * 20)
+	time.Sleep(time.Nanosecond * 200)
 	w.b = append(w.b, b...)
 	return len(b), nil
 }

@@ -22,15 +22,15 @@ type gollog struct {
 }
 
 func (l *gollog) msgPump() {
-
-	for msg := range l.logChan {
+	var msg *logMSG
+	for msg = range l.logChan {
 
 		for _, v := range l.adapters {
 			if v.Level() <= msg.logLevel {
 				io.Copy(v, &msg.bf)
 			}
 		}
-		msgPoolPut(msg)
+		msg.bf.Reset()
 	}
 
 	close(l.doneChan)

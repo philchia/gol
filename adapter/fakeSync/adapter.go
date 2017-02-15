@@ -43,7 +43,7 @@ func (w *ReadWriter) Read() []byte {
 // NewAdapter create a fake adapter with sync read method
 func NewAdapter(l ...level.LogLevel) *ReadWriter {
 	w := &ReadWriter{
-		done: make(chan struct{}, 100),
+		done: make(chan struct{}, 1),
 	}
 	if len(l) > 0 {
 		w.logLevel = l[0]
