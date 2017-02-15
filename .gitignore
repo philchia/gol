@@ -1,6 +1,3 @@
-### Build file ###
-go_redis_client
-
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/
 .settings/
