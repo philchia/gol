@@ -12,9 +12,7 @@ var bp sync.Pool
 var mp sync.Pool
 
 func init() {
-	bp.New = func() interface{} {
-		return bytes.NewBuffer(nil)
-	}
+
 	mp.New = func() interface{} {
 		return &logMSG{}
 	}
@@ -22,15 +20,7 @@ func init() {
 
 type logMSG struct {
 	logLevel level.LogLevel
-	msg      string
-}
-
-func bufferPoolGet() *bytes.Buffer {
-	return bp.Get().(*bytes.Buffer)
-}
-
-func bufferPoolPut(b *bytes.Buffer) {
-	bp.Put(b)
+	bf       bytes.Buffer
 }
 
 func msgPoolGet() *logMSG {
@@ -38,5 +28,6 @@ func msgPoolGet() *logMSG {
 }
 
 func msgPoolPut(m *logMSG) {
+	m.bf.Reset()
 	mp.Put(m)
 }

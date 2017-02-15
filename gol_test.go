@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/philchia/gol/adapter"
+	"github.com/philchia/gol/adapter/fake"
 	"github.com/philchia/gol/adapter/fakeSync"
 	"github.com/philchia/gol/level"
 
@@ -471,11 +472,11 @@ func TestFlush(t *testing.T) {
 }
 
 func BenchmarkLog(b *testing.B) {
-	l := log.New(fakeSync.NewAdapter(), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
+	l := log.New(fake.NewAdapter(), "\033[32m[DEBUG]\033[0m ", log.LstdFlags)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		go l.Println("Hello")
+		l.Println("Hello")
 	}
 }
 
@@ -483,7 +484,7 @@ func BenchmarkGol(b *testing.B) {
 	g := NewLogger(level.DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
 	// g.SetOption(0)
-	g.AddLogAdapter("fake", fakeSync.NewAdapter())
+	g.AddLogAdapter("fake", fake.NewAdapter(level.DEBUG))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		g.Debug("Hello")
@@ -495,7 +496,7 @@ func BenchmarkMultiThreadLog(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 10; j++ {
+		for j := 0; j < 100; j++ {
 			go l.Println("Hello")
 		}
 	}
@@ -504,10 +505,10 @@ func BenchmarkMultiThreadLog(b *testing.B) {
 func BenchmarkMultiThreadGol(b *testing.B) {
 	g := NewLogger(level.DEBUG)
 	g.RemoveAdapter(CONSOLELOGGER)
-	g.AddLogAdapter("fake", fakeSync.NewAdapter())
+	g.AddLogAdapter("fake", fakeSync.NewAdapter(level.DEBUG))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 10; j++ {
+		for j := 0; j < 100; j++ {
 			go g.Debug("Hello")
 		}
 	}

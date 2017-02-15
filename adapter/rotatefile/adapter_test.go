@@ -25,11 +25,11 @@ func TestNewAdapter(t *testing.T) {
 		{
 			"case2",
 			args{
-				`......./assets/test.log`,
-				2,
+				`../../assets/test.log`,
+				4,
 				MB,
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {

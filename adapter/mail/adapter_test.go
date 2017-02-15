@@ -110,7 +110,7 @@ func TestNewAdapter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewAdapter(tt.args.host, tt.args.account, tt.args.password, tt.args.subject, tt.args.receivers...); (got == nil) != tt.wantNil {
+			if got := NewAdapter(tt.args.host, tt.args.account, tt.args.password, tt.args.subject, tt.args.receivers); (got == nil) != tt.wantNil {
 				t.Error("NewAdapter() got != want")
 			}
 		})

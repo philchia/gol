@@ -35,7 +35,7 @@ func TestNewAdapter(t *testing.T) {
 		{
 			"case1",
 			&consoleAdapter{
-				os.Stderr,
+				WriteCloser: os.Stderr,
 			},
 		},
 	}
@@ -90,7 +90,7 @@ func Test_consoleAdapter_Write(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &consoleAdapter{
-				tt.fields.writer,
+				WriteCloser: tt.fields.writer,
 			}
 			got, err := c.Write(tt.args.b)
 			if (err != nil) != tt.wantErr {

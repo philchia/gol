@@ -3,8 +3,6 @@ package gol
 import (
 	"fmt"
 
-	"bytes"
-
 	"io"
 
 	"github.com/philchia/gol/adapter"
@@ -26,10 +24,10 @@ type gollog struct {
 func (l *gollog) msgPump() {
 
 	for msg := range l.logChan {
-		buf := bytes.NewBufferString(msg.msg)
+
 		for _, v := range l.adapters {
 			if v.Level() <= msg.logLevel {
-				io.Copy(v, buf)
+				io.Copy(v, &msg.bf)
 			}
 		}
 		msgPoolPut(msg)
@@ -45,7 +43,7 @@ func (l *gollog) put(msg *logMSG) {
 func (l *gollog) output(callDepth int, level level.LogLevel, msg string) {
 	logmsg := msgPoolGet()
 	logmsg.logLevel = level
-	logmsg.msg = l.generateLog(callDepth, level, msg).String()
+	l.generateLog(callDepth, level, msg, &logmsg.bf)
 	l.put(logmsg)
 }
 
