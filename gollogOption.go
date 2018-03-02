@@ -91,7 +91,7 @@ func writeFineLineHeader(buf *bytes.Buffer, option LogOption, callDepth int) {
 func getCaller(depth int) (file string, line int) {
 
 	var ok bool
-	_, file, line, ok = runtime.Caller(depth)
+	_, file, line, ok = runtime.Caller(depth + 1)
 	if !ok {
 		file = "???"
 		line = 0
@@ -101,7 +101,7 @@ func getCaller(depth int) (file string, line int) {
 
 func (l *gollog) generateLog(callDepth int, level level.LogLevel, msg string, buf *bytes.Buffer) {
 
-	l.generatePrefix(buf, callDepth)
+	l.generatePrefix(buf, callDepth+1)
 
 	buf.Write(level.Bytes())
 	buf.WriteString(internal.JoinStrings(" ", msg, "\n"))

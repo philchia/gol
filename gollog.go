@@ -43,7 +43,7 @@ func (l *gollog) put(msg *logMSG) {
 func (l *gollog) output(callDepth int, level level.LogLevel, msg string) {
 	logmsg := msgPoolGet()
 	logmsg.logLevel = level
-	l.generateLog(callDepth, level, msg, &logmsg.bf)
+	l.generateLog(callDepth+1, level, msg, &logmsg.bf)
 	l.put(logmsg)
 }
 
