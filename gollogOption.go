@@ -103,6 +103,10 @@ func (l *gollog) generateLog(callDepth int, level level.LogLevel, msg string, bu
 
 	l.generatePrefix(buf, callDepth+1)
 
-	buf.Write(level.Bytes())
-	buf.WriteString(internal.JoinStrings(" ", msg, "\n"))
+	if l.option&(Llevel) != 0 {
+		buf.Write(level.Bytes())
+		buf.WriteString(internal.JoinStrings(" ", msg, "\n"))
+	} else {
+		buf.WriteString(internal.JoinStrings(msg, "\n"))
+	}
 }
