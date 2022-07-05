@@ -136,7 +136,7 @@ import (
 )
 
 defer gol.Flush()
-gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
+gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llevel)
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)
 
@@ -153,7 +153,7 @@ import (
 )
 
 defer gol.Flush()
-gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds)
+gol.SetOption(gol.Llongfile | gol.Ldate | gol.Ltime | gol.Lmicroseconds | gol.Llevel)
 gol.AddLogAdapter("anonymous", a)
 gol.Debug("Hello, gol!!!")
 gol.Criticalf("Hello from %s", runtime.GOOS)

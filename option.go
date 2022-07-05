@@ -25,6 +25,8 @@ const (
 	Lshortfile // final file name element and line number: d.go:23. overrides Llongfile
 	// LUTC print time as UTC format
 	LUTC // if Ldate or Ltime is set, use UTC rather than the local time zone
+	// Llevel output level on log line
+	Llevel // disable to write raw lines
 	// LstdFlags is the default header format
-	LstdFlags = Ldate | Ltime | Lshortfile // initial values for the standard logger
+	LstdFlags = Ldate | Ltime | Lshortfile | Llevel // initial values for the standard logger
 )

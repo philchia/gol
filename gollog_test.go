@@ -18,7 +18,7 @@ func init() {
 
 	_logger.AddLogAdapter("fake", _loggerAdapter)
 	_logger.RemoveAdapter(CONSOLELOGGER)
-	_logger.SetOption(LogOption(0))
+	_logger.SetOption(LogOption(Llevel))
 }
 
 func Test_gollog_Debug(t *testing.T) {

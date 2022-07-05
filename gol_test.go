@@ -17,7 +17,7 @@ var _adapter = fakeSync.NewAdapter()
 func init() {
 	logger.AddLogAdapter("fake", _adapter)
 	logger.RemoveAdapter(CONSOLELOGGER)
-	logger.SetOption(LogOption(0))
+	logger.SetOption(LogOption(Llevel))
 }
 
 func TestDebug(t *testing.T) {
